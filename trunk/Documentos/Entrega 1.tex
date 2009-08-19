@@ -20,7 +20,7 @@
 % $Rev: 595 $
 \title{\Huge \textbf{Arquitectura de computadores}\\\Large \textbf{Entrega 1}}
 \author{Grupo G11}
-\date{ de 2009}
+\date{24 de Agosto de 2009}
 \begin{document}
 
 \maketitle
@@ -31,15 +31,18 @@
 \listoffigures
 
 \newpage
-\section{Descripci\'on General}
-\subsection{Perspectiva del Producto}
-	%¿Qué espera el cliente del producto? ¿Cómo lo va a ayudar? ¿Qué problema va a solucionar?
-	Woodtech es una empresa que ofrece servicios de mediciones de diversos tipos, aplicadas actualmente a las industrias madereras y mineras. Los productos ofrecidos constan, a grandes rasgos, de elementos físicos (\textit{Hardware}), como el portal de mediciones y diversos servidores; y por otro lado de Software, como algoritmos de cálculo e interfaces de auditoría y de control de mediciones.
-	
-	El control de mediciones se realiza a través de la aplicación denominada \textit{Workbench}, cliente que consume servicios de servidores (particularmente del \textit{Engine}). Este permite a los operarios capturar, seleccionar, revisar y modificar mediciones sobre transportes de un determinado tipo de material como madera o carbón. 
-	
-	Así, en el contexto de renovación y evolución de la empresa, se buscará solucionar los problemas que presenta el actual \textit{Workbench} utilizado por los operarios. Este \textit{Workbench} fue pensado para ser usado únicamente en pruebas internas, pero luego se adaptó como un producto final. Adicionalmente, el software actual está implementado usando \textit{CodeGear Delphi}; sin embargo, debido a que el resto de los programas de Woodtech como el \textit{Engine} usan Java, es deseable que el software también esté implementado usando esta plataforma.	Debido a estas razones, el software actualmente no satisface las necesidades de extensibilidad y mantenibilidad requeridas por el cliente.
-	
-	De esta forma, el producto a desarrollar será un reemplazo completo al Workbench ya existente desarrollado por el cliente, y tendrá su misma funcionalidad. Buscará solucionar estas necesidades, entregando un software escrito en el lenguaje Java con un diseño que le dé extensibilidad y mantenibilidad suficiente para facilitar el agregamiento de nuevas capacidades. Además, se construirá de forma que sea mantenible por el equipo de desarrollo del cliente. Por otra parte, deberá proveer una interfaz amigable que sea posible de ocupar por un operario.
+\section{Descripción del proyecto}
+\subsection{Descripción general}
+El dispositivo a realizar consiste en un controlador de reproducción de música. Básicamente, el controlador recibirá información del ambiente en que se encuentra, y en base a ésta controlará diversos aspectos de la reproducción.
+
+\subsection{Funcionalidad}
+Nuestro dispositivo controlará tanto el volumen de la reproducción como la música que se toca. Para esto, debe poder sensar el ambiente con el fin de detectar cambios en la intensidad de luz y del ruido ambiental, regulando el tipo de música y el volumen de ésta respectivamente.
+Por ejemplo, si la luz ambiental es fuerte se tocará música movida, y si el ruido ambiental es bajo el volumen también lo será. De esta forma, nuestro dispositivo captará en cierta manera la \textit{vibra} del ambiente y así reproducirá la música adecuada.
+
+\subsection{Características}
+
+ 
+\section{Dispositivos a utilizar}
+
 
 \end{document}
