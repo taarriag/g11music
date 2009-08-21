@@ -50,8 +50,7 @@ El dispositivo a realizar consiste en un controlador de reproducción de música. 
 Nuestro dispositivo consistirá en un periférico para computador, el cual controlará tanto el volumen de la reproducción como la música que se toca. Para esto, debe poder sensar el ambiente con el fin de detectar cambios en la intensidad de luz y del ruido ambiental, regulando el tipo de música y el volumen de ésta respectivamente.
 Por ejemplo, si la luz ambiental es fuerte se tocará música movida, y si el ruido ambiental es bajo el volumen también lo será. De esta forma, nuestro dispositivo captará en cierta manera la \textit{vibra} del ambiente y así reproducirá la música adecuada.
 
-
-
+Además el dispositivo permitirá al usuario configurar el dispositivo desde un PC y programar el tiempo en el cuál se encenderá/apagara por medio de un botón físico.
 
 \subsection{Características}
 Para poder realizar las funcionalidades definidas en el apartado anterior, el periférico debe estar compuesto por los siguientes dispositivos. En primer lugar debe poseer un sensor que le permita detectar el ruido ambiente. De esta forma, cuando el ruido ambiente aumenta, el dispositivo determina un aumento del volumen de la música que está reproduciendo el computador. Junto con lo anterior, el dispositivo debe tener un sensor lumínico el cual permita medir la luminosidad del ambiente, determinando qué tipo de música reproducir. Luego, a través del análisis de los datos entregados por los dos sensores anteriores, el dispositivo controlará la reproducción de la música.\\
@@ -124,5 +123,6 @@ La siguiente Tabla resume los dispositivos que se utilizarán en la construcción 
 		 \item \textbf{Configurar el sistema:} Transformar input a la interfaz gráfica o a los controles físicos en instrucciones que permitan, por ejemplo, cambiar los niveles de intensidad de luz o ruido para los cuales se reproduce cierto tipo de música.
 		 \item \textbf{Detectar cambios en el ambiente:} A partir de la señal enviada desde los sensores, el microcontrolador deberá ejecutar instrucciones que produzcan cambios a nivel de software en el computador principal. Por ejemplo, cambiar la canción cuando la intensidad de la luz aumente/disminuya o bien cambiar el volúmen según el ruido del ambiente.
 		 \item \textbf{Modificar el display de la información:} Cada vez que se detecte un cambio en las variables sensadas o en la canción que se está reproduciendo, el microcontrolador deberá enviar la información a los dispositivos de display (16x2 character LCD y monitor del pc) de tal forma que éstos muestren información actualizada sobre el estado del sistema.
+		 \item \textbf{Controlar tiempos:} El sistema debe ser capaz de prenderse o apagarse automáticamente según el tiempo ingresado por el usuario al pulsar un botón. Para esto el microcontrolador recibirá la información y utilizando el timer deberá prender/apagar el sistema cuando llegue al tiempo definido.
 	\end{itemize}
 \end{document}
