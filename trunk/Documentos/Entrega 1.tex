@@ -127,4 +127,16 @@ La siguiente Tabla resume los dispositivos que se utilizarán en la construcción 
 		 \item \textbf{Modificar el display de la información:} Cada vez que se detecte un cambio en las variables sensadas o en la canción que se está reproduciendo, el microcontrolador deberá enviar la información a los dispositivos de display (16x2 character LCD y monitor del pc) de tal forma que éstos muestren información actualizada sobre el estado del sistema.
 		 \item \textbf{Controlar tiempos:} El sistema debe ser capaz de prenderse o apagarse automáticamente según el tiempo ingresado por el usuario al pulsar un botón. Para esto el microcontrolador recibirá la información y utilizando el timer deberá prender/apagar el sistema cuando llegue al tiempo definido.
 	\end{itemize}
+	
+\subsection{16x2 Character LCD}
+\subsubsection{Aplicación}
+Se utilizará para mostrar información sobre la canción que se está reproduciendo, el estado de los sensores (intensidad alta/media/baja). Esta información deberá ser enviada desde el microcontrolador. 
+
+\subsection{Sensor de Luz}
+\subsubsection{Aplicación}
+Capturará la intensidad lumínica del ambiente y enviará la señal de voltaje correspondiente hacia el microcontrolador.
+
+\subsection{Sensor de sonidos}
+\subsubsection{Aplicación}
+Capturará la intensidad sonora del ambiente y enviará la señal de voltaje correspondiente hacia el microcontrolador.
 \end{document}
