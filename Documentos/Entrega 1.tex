@@ -55,23 +55,11 @@ Adicionalmente al control automático de la música, el dispositivo permitirá come
 El dispositivo y las canciones que se reproducirán para las distintas \textit{vibras} presentes en el ambiente se podrán configurar desde un PC.\\
 
 \subsection{Características}
-Para poder realizar las funcionalidades definidas en el apartado anterior, el periférico debe estar compuesto por los siguientes dispositivos. En primer lugar debe poseer un sensor que le permita detectar el ruido ambiente. De esta forma, cuando el ruido ambiente aumenta, el dispositivo determina un aumento del volumen de la música que está reproduciendo el computador. Junto con lo anterior, el dispositivo debe tener un sensor lumínico el cual permita medir la luminosidad del ambiente, determinando qué tipo de música reproducir. Luego, a través del análisis de los datos entregados por los dos sensores anteriores, el dispositivo controlará la reproducción de la música.\\
+Para poder realizar las funcionalidades definidas en el apartado anterior, el periférico debe estar compuesto por diferentes dispositivos. En primer lugar debe poseer un sensor que le permita detectar el ruido ambiente. De esta forma, cuando el ruido ambiente aumenta, el dispositivo determina un aumento del volumen de la música que está reproduciendo el computador. Junto con lo anterior, el dispositivo debe tener un sensor lumínico el cual permita medir la luminosidad del ambiente, determinando qué tipo de música reproducir. Luego, a través del análisis de los datos entregados por los dos sensores anteriores, el dispositivo controlará la reproducción de la música.
 
-Continuar:\\
-sensores:\\
--sensor de sonido, esoecializado\\
--sensor de luz\\
--potenciometro\\
--pantalla 7 segmentos hora\\
--pantalla para titulo de la cancion(opcional)\\
-\\
+Otra parte esencial del periférico es dar información al usuario. Para este fin utilizaremos una pantalla LCD de 16x2 caracteres, en la cual se mostrará tanto la información de la canción que se está reproduciendo (proporcionada por el computador y transmitida por el microcontrolador) como el tiempo restanteen el timer de encedido/apagado.
 
-Botones:\\
--play/pause\\
--stop\\
--forward-backward\\
--controlar volumen\\
--controlar sensor de volumen y intensidad lumínica\\
+Finalmente, usaremos varios botones que permiten controlar la reproducción. Estos son los típicos de cualquier reproductor: play/pause, stop, forward y backward. De esta manera el usuario podrá controlar la reproducción de las canciones, pero siempre dentro del playlist definido por el microcontrolador a través de la información del ambiente.
 
  
 \newpage 
