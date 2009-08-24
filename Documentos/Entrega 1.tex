@@ -57,9 +57,9 @@ El dispositivo y las canciones que se reproducirán para las distintas \textit{vi
 \subsection{Características}
 Para poder realizar las funcionalidades definidas en el apartado anterior, el periférico debe estar compuesto por diferentes dispositivos. En primer lugar debe poseer un sensor que le permita detectar el ruido ambiente. De esta forma, cuando el ruido ambiente aumenta, el dispositivo determina un aumento del volumen de la música que está reproduciendo el computador. Junto con lo anterior, el dispositivo debe tener un sensor lumínico el cual permita medir la luminosidad del ambiente, determinando qué tipo de música reproducir. Luego, a través del análisis de los datos entregados por los dos sensores anteriores, el dispositivo controlará la reproducción de la música.
 
-Otra parte esencial del periférico es dar información al usuario. Para este fin utilizaremos una pantalla LCD de 16x2 caracteres, en la cual se mostrará tanto la información de la canción que se está reproduciendo (proporcionada por el computador y transmitida por el microcontrolador) como el tiempo restanteen el timer de encedido/apagado.
+Otra parte esencial del periférico es dar información al usuario. Para este fin utilizaremos una pantalla LCD de 16x2 caracteres, en la cual se mostrará tanto la información de la canción que se está reproduciendo (proporcionada por el computador y transmitida por el microcontrolador) como el tiempo restante en el timer de encedido/apagado.
 
-Finalmente, usaremos varios botones que permiten controlar la reproducción. Estos son los típicos de cualquier reproductor: play/pause, stop, forward y backward. De esta manera el usuario podrá controlar la reproducción de las canciones, pero siempre dentro del playlist definido por el microcontrolador a través de la información del ambiente.
+Finalmente, usaremos varios botones que permiten controlar la reproducción. Estos son los típicos de cualquier reproductor: play/pause, stop, forward y backward. De esta manera el usuario podrá controlar la reproducción de las canciones, pero siempre dentro del playlist definido por el microcontrolador a través de la información del ambiente. Incluimos además dos botones para controlar el \textit{timer}: uno para aumentar el tiempo y otro para resetearlo, de manera que el usuario pueda ingresar el tiempo que desee (en minutos preferentemente).
 
  
 \newpage 
@@ -122,7 +122,7 @@ Para más información, es posible hacer click en las tiendas y datasheets.
 	
 \subsection{16x2 Character LCD}
 \subsubsection{Aplicación}
-Se utilizará para mostrar información sobre la canción que se está reproduciendo, el estado de los sensores (intensidad alta/media/baja). Esta información deberá ser enviada desde el microcontrolador. 
+Se utilizará para mostrar información sobre la canción que se está reproduciendo, el estado de los sensores (intensidad alta/media/baja) y el tiempo del \textit{timer}. Esta información deberá ser enviada desde el microcontrolador. 
 
 \subsection{Sensor de Luz}
 \subsubsection{Aplicación}
