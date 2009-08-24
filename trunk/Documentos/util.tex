@@ -1,0 +1,186 @@
+% $Id: util.tex 708 2008-03-24 00:06:12Z jpcanepa $
+\usepackage{ulem}			% For strikethrough text
+\usepackage{listings}	% Code typessting
+\usepackage{ifthen}		% For \ifthenelse
+\usepackage{graphicx}
+
+\usepackage[spanish]{babel} %idioma
+\usepackage[latin1]{inputenc}
+
+% Counters
+\newcounter{lecturenumber}		% Lecture number
+
+%%%% LISTINGS CUSTOMIZATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Color de los comentarios, por si escapamos a LaTeX en un lstlisting
+\newcommand{\CommentColor}{\color{green!60!black}}
+
+% String color used in listings
+\newcommand{\StringColor}{\color{red!70!black}}
+
+% User keywords color
+\newcommand{\UserKeywordsColor}{\color{cyan!50!black}}
+
+% Keywords color
+\newcommand{\KeywordsColor}{\color{blue}}
+
+% Define the C# languaje style
+\lstdefinelanguage{CSharp}
+{
+	basicstyle=\small\ttfamily,
+	keywordstyle=\KeywordsColor\textbf,
+	keywordstyle=[2]\UserKeywordsColor,
+	keywordstyle=[3]\StringColor,
+	tabsize=2,
+	morekeywords={abstract, as, base, bool, break, byte, case, 
+		catch, char, checked,class, const, continue, decimal, 
+		default, delegate, do, double, else, enum, event, explicit,
+		extern, false, finally, fixed, float, for, foreach, get, goto, 
+		if, implicit, in, int, interface, internal, is, lock, long,
+		namespace, new, null, object, operator, out, override, 
+		params, partial, private, protected, public, readonly, ref, return, 
+		sbyte, sealed, set, short, sizeof, stackalloc, static, string,
+		struct, switch, this, throw, try, typeof, true, uint, ulong, 
+		unchecked, unsafe, ushort, using, value, virtual, volatile,
+		void, while, where},
+	morekeywords=[2]{Program,Console,String},
+	morekeywords=[3]{@}, 
+	commentstyle=\CommentColor,
+	stringstyle=\StringColor,
+	sensitive=true,
+	morecomment=[l]{//},
+	morecomment=[s]{/*}{*/},
+	morestring=[b]",
+	showstringspaces=false,
+	aboveskip=0pt, 
+	belowskip=0pt,
+	mathescape=true
+}
+
+\lstdefinelanguage{BASIC}
+{
+	mathescape=false,
+	basicstyle=\small\ttfamily,
+	keywordstyle=\KeywordsColor\textbf,
+	keywordstyle=[2]\UserKeywordsColor,
+	tabsize=2,
+	keywords={DATA,IF,RANDOMIZE,STOP,DIM,INPUT,READ,THEN,END,LET,REM,
+		TO,FOR,NEXT,RESTORE,TROFF,GOSUB,ON,RETURN,TRON,GOTO,PRINT,
+		STEP,AND,OR},
+	keywords=[2]{LEN,LEFT\$,RND,INT,SIN,COS,TAN,ATN,SQR,MAX,MIN,ABS,
+		LEFT\$,RIGHT\$,MID\$,CHR\$,LEN,VAL,SPC\$,LOG,FRE,SGN,
+		TAB,STR\$},
+	commentstyle=\CommentColor,
+	stringstyle=\StringColor,
+	sensitive=true,
+	morestring=[b]",
+	showstringspaces=false,
+	aboveskip=0pt, 
+	belowskip=0pt,	
+}
+
+\lstdefinelanguage{Java2}[]{Java}
+{
+	keywordstyle=[2]\UserKeywordsColor
+}
+
+% Set as the default languaje
+\lstset{language=CSharp}
+
+%%%%% CONVENIENCE COMMANDS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Allow the user to add more user-level keywords
+\newcommand{\AddUserKeywords}[1]{\lstset{morekeywords=[2]{#1}}}
+
+% Allow the user to change the size the code is typeset with (without knowing the 
+% exact lstsset syntax
+\newcommand{\CodeSize}[1]{\lstset{basicstyle=#1\ttfamily}}
+
+% Outputs title slide information
+% @param Lecture number
+% @param Main title
+% @param Subtitle
+% @param Lecture date
+\newcommand{\presentationheader}[4]
+{
+\setcounter{lecturenumber}{#1}
+\title[Entrega \thelecturenumber]{{\scriptsize IIC2342 -- Arquitectura de Computadores} \\ #2}
+\author[G11]{Grupo 11}
+\subtitle{#3}
+\date{#4}
+\institute[PUC]{Pontificia Universidad Cat\'olica de Chile}
+}
+
+% Use to typeset placeholder text that must be replaced before 
+% final release
+\newcommand{\placeholder}[1]{{\color{red}\fbox{#1}}}
+
+%%%%% BEAMER CUSTOMIZATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% By default, use <+-> as the overlay specification
+\beamerdefaultoverlayspecification{<+->}
+
+% Main theme
+\usetheme[secheader]{Boadilla}
+
+% Let math be typeset using serif fonts
+\usefonttheme[onlymath]{serif}
+
+% At the beginning of every subsection, display a single slide with the 
+% section and subsection title
+\AtBeginSubsection[]
+{
+\begin{frame}
+	\begin{center}
+		{ \usebeamercolor[fg]{frametitle}
+			{\scriptsize \insertsection}  \\
+			{\Huge \insertsubsection}
+		}
+	\end{center}
+\end{frame}
+}
+
+% At the beginning of each section, output a slide with the section title
+\AtBeginSection[]
+{
+\begin{frame}
+	\begin{center}
+		{ \usebeamercolor[fg]{frametitle}
+			{\Huge \insertsection}
+		}
+	\end{center}
+\end{frame}
+}
+
+% Replace those ugly looking balls with some slightly less ugly circles
+% in enumerate/itemize and TOC
+\setbeamertemplate{enumerate items}[circle]
+\setbeamertemplate{itemize items}[circle]
+\setbeamertemplate{sections/subsections in toc}[circle]
+
+% Set the footline to something simpler. No need for Name/Lecture, etc. Just a plain 
+% color box with the slide counter and the lecture number
+\setbeamertemplate{footline}{
+  \leavevmode%
+  \hbox{%
+  \begin{beamercolorbox}[wd=0.15\paperwidth,ht=2.25ex,dp=1ex,left]{title in head/foot}%
+    \centering\usebeamerfont{title in head/foot} \insertshorttitle
+  \end{beamercolorbox}}%
+  \hbox{%
+  \begin{beamercolorbox}[wd=0.85\paperwidth,ht=2.25ex,dp=1ex,right]{author in head/foot}%
+    \usebeamerfont{author in head/foot} \insertframenumber{} / \inserttotalframenumber\hspace*{2ex} 
+  \end{beamercolorbox}}%
+  \vskip0pt%
+}
+
+% Supress navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+% Redefine the "example" environment
+% @param The title of the example
+%  - Adds a header with the example number in the format "<lecture number>.<example number>"
+\renewenvironment{example}[1]{%
+	\begin{exampleblock}{{\small {\bf Ejemplo}: #1}}
+}{
+	\end{exampleblock}
+}
