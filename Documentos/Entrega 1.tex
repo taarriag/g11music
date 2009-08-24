@@ -47,7 +47,7 @@
 El dispositivo a realizar consiste en un controlador de reproducción de música. Básicamente, el controlador recibirá información del ambiente en que se encuentra, y en base a ésta controlará diversos aspectos de la reproducción de la música en un computador.
 
 \subsection{Funcionalidad}
-Nuestro dispositivo consistirá en un periférico para computador, el cual será capaz de controlar automáticamente la música que el computador se encuentra reproduciendo y su volumen según el ambiente. Para esto, el dispositivo deberá \textbf{sensar} el ambiente con el fin de detectar cambios en la intensidad de luz y del ruido ambiental, regulando el tipo de música que se reproducirá y su volumen.
+Nuestro dispositivo consistirá en un periférico para computador, el cual será capaz de controlar automáticamente la música que el computador se encuentra reproduciendo y su volumen según el ambiente. Para esto, el dispositivo deberá monitorear el ambiente con el fin de detectar cambios en la intensidad de luz y del ruido ambiental, regulando el tipo de música que se reproducirá y su volumen.
 Por ejemplo, si la luz ambiental es fuerte se tocará música movida, y si el ruido ambiental es bajo el volumen también lo será. De esta forma, nuestro dispositivo captará en cierta manera la \textit{vibra} del ambiente y así reproducirá la música adecuada.\\
 
 Adicionalmente al control automático de la música, el dispositivo permitirá comenzar y pausar la reproducción cuando el usuario lo desee, como también adelantar y retroceder de canción. Junto con lo anterior, el usuario podrá programar un tiempo en que el dispositivo pueda iniciar o detener automáticamente la reproducción. El tiempo ingresado se mostrará al usuario en una pantalla en conjunto con el nombre de la canción que se está reproduciendo.\\
@@ -55,11 +55,11 @@ Adicionalmente al control automático de la música, el dispositivo permitirá come
 El dispositivo y las canciones que se reproducirán para las distintas \textit{vibras} presentes en el ambiente se podrán configurar desde un PC.\\
 
 \subsection{Características}
-Para poder realizar las funcionalidades definidas en el apartado anterior, el periférico debe estar compuesto por diferentes dispositivos. En primer lugar debe poseer un sensor que le permita detectar el ruido ambiente. De esta forma, cuando el ruido ambiente aumenta, el dispositivo determina un aumento del volumen de la música que está reproduciendo el computador. Junto con lo anterior, el dispositivo debe tener un sensor lumínico el cual permita medir la luminosidad del ambiente, determinando qué tipo de música reproducir. Luego, a través del análisis de los datos entregados por los dos sensores anteriores, el dispositivo controlará la reproducción de la música.
+Para poder realizar las funcionalidades definidas en el apartado anterior, el periférico debe estar compuesto por diferentes dispositivos. En primer lugar debe poseer un sensor que le permita detectar el ruido ambiente. De esta forma, cuando el ruido ambiente aumenta, el dispositivo determina un aumento del volumen de la música que está reproduciendo el computador. Junto con lo anterior, el dispositivo debe tener un sensor lumínico el cual permita medir la luminosidad del ambiente, determinando qué tipo de música reproducir. Luego, a través del análisis de los datos entregados por los dos sensores anteriores, el dispositivo controlará la reproducción de la música.\\
 
-Otra parte esencial del periférico es dar información al usuario. Para este fin utilizaremos una pantalla LCD de 16x2 caracteres, en la cual se mostrará tanto la información de la canción que se está reproduciendo (proporcionada por el computador y transmitida por el microcontrolador) como el tiempo restante en el timer de encedido/apagado.
+Otra parte esencial del periférico es dar información al usuario. Para este fin utilizaremos una pantalla LCD de 16x2 caracteres, en la cual se mostrará tanto la información de la canción que se está reproduciendo (proporcionada por el computador y transmitida por el microcontrolador) como el tiempo restante en el timer de encendido/apagado.\\
 
-Finalmente, usaremos varios botones que permiten controlar la reproducción. Estos son los típicos de cualquier reproductor: play/pause, stop, forward y backward. De esta manera el usuario podrá controlar la reproducción de las canciones, pero siempre dentro del playlist definido por el microcontrolador a través de la información del ambiente. Incluimos además dos botones para controlar el \textit{timer}: uno para aumentar el tiempo y otro para resetearlo, de manera que el usuario pueda ingresar el tiempo que desee (en minutos preferentemente).
+Finalmente, usaremos varios botones que permiten controlar la reproducción. Estos son los típicos de cualquier reproductor: play/pause, stop, forward y backward. De esta manera el usuario podrá controlar la reproducción de las canciones, pero siempre dentro del playlist definido por el microcontrolador a través de la información del ambiente. Incluimos además dos botones para controlar el \textit{timer}: uno para aumentar el tiempo y otro para resetearlo, de manera que el usuario pueda ingresar el tiempo que desee (en minutos preferentemente).\\
 
  
 \newpage 
@@ -121,14 +121,17 @@ Para más información, es posible hacer click en las tiendas y datasheets.
 	\end{itemize}
 	
 \subsection{16x2 Character LCD}
+\subsubsection{Características}
+Utiliza el ampliamente conocido chip HD44780 para su interfaz en paralelo. El código para la interfaz está disponible gratuitamente. Se necesitan aproximadamente 11 pines I/O para controlar la pantalla LCD. Incluye un LED Backlight (para alumbrar el fondo de la pantalla).\footnote{Descripción obtenida de \href{http://www.olimex.cl/product_info.php?products_id=154}{Olimex.cl}.}
+
 \subsubsection{Aplicación}
 Se utilizará para mostrar información sobre la canción que se está reproduciendo, el estado de los sensores (intensidad alta/media/baja) y el tiempo del \textit{timer}. Esta información deberá ser enviada desde el microcontrolador. 
 
-\subsection{Sensor de Luz}
-\subsubsection{Aplicación}
-Capturará la intensidad lumínica del ambiente y enviará la señal de voltaje correspondiente hacia el microcontrolador.
+\subsection{Sensores de Luz y de sonidos}
+\subsubsection{Características}
+Ambos sensores tienen una salida que devuelve un voltaje cuyo valor refleja la intensidad capturada.
 
-\subsection{Sensor de sonidos}
 \subsubsection{Aplicación}
-Capturará la intensidad sonora del ambiente y enviará la señal de voltaje correspondiente hacia el microcontrolador.
+Se encargan de capturar la intensidad lumínica y sonora del ambiente respectivamente, y enviaran la señal de voltaje correspondiente hacia el microcontrolador. La información de la intensidad será digitalizada por el microcontrolador. Según el rango en el cual se encuentre el voltaje, el microcontrolador le indicará al computador los niveles de intensidad, los que pueden tomar 3 valores posibles: alto, medio y bajo. Luego la canción a reproducir y el volumen serán determinados a partir de los niveles de intensidad.
+
 \end{document}
