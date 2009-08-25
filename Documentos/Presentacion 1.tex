@@ -35,22 +35,47 @@
 \begin{frame}
 	\pause \frametitle{Descripción del Proyecto}
 	\begin{itemize}[<+->]
-		\item Nuestro dispositivo consistirá en un periférico para computador, cuya característica principal es la de controlar automáticamente la música que el computador se encuentra reproduciendo y su volumen según condiciones ambientales. 
-		\item Para esto, el dispositivo deberá monitorear el ambiente con el fin de detectar cambios en la intensidad de luz y del ruido ambiental, regulando el tipo de música que se reproducirá y su volumen.
+		\item SmartSounds será un dispositivo capaz de:
+		\item Detectar la intensidad lumínica y sonora del ambiente a través de sensores.
+		\item Intercambiar la información obtenida con un computador.
+		\item Determinar automáticamente el tipo de música a reproducir y el volumen de esta reproducción.
 		\begin{itemize}[<+->]
-			\item Por ejemplo, si la luz ambiental es fuerte se tocará música movida, y si el ruido ambiental es bajo el volumen también lo será.
+			\item En función de las intensidades detectadas.
+		\end{itemize}
+		\item Ser configurado y controlado desde el PC al cual está conectado.
+		\item Mostrar información sobre su estado en una pantalla LCD.
+		\item Ser controlado mediante un panel de control físico.
+		\item Ser programado para iniciar o detener automáticamente la reproducción.		
+	%	\item Nuestro dispositivo consistirá en un periférico para computador, cuya característica principal es la de controlar automáticamente la música que el computador se encuentra reproduciendo y su volumen según condiciones ambientales. 
+%		\item Para esto, el dispositivo deberá monitorear el ambiente con el fin de detectar cambios en la intensidad de luz y del ruido ambiental, regulando el tipo de música que se reproducirá y su volumen.
+%		\begin{itemize}[<+->]
+%			\item Por ejemplo, si la luz ambiental es fuerte se tocará música movida, y si el ruido ambiental es bajo el volumen también lo será.
+%		\end{itemize}
+%	\item De esta forma, nuestro dispositivo captará en cierta manera la vibra del ambiente y así reproducirá la música adecuada.
 	\end{itemize}
-	\item De esta forma, nuestro dispositivo captará en cierta manera la vibra del ambiente y así reproducirá la música adecuada.
-\end{itemize}
 \end{frame}
 %-----------------------------------------------
+%\begin{frame}
+%\frametitle{Descripción del Proyecto}
+%	\begin{itemize}[<+->]
+%		\item El dispositivo dispondrá de una pantalla LED que mostrara informacion de la cancion en reproducción, como Titulo, autor, album etc...
+%		\item El usuario podrá programar un tiempo en que el dispositivo pueda iniciar o detener automáticamente la reproducción.
+%		\item Adicionalmente, el dispositivo permitirá comenzar y pausar la reproducción cuando el usuario lo desee, como también adelantar y retroceder de canción. 
+%		\item Las canciones que se reproducirán para las distintas vibras presentes en el ambiente se podrán configurar desde el computador.	
+%	\end{itemize}
+%\end{frame}
+%-----------------------------------------------
 \begin{frame}
-\frametitle{Descripción del Proyecto}
+\frametitle{¿Como funciona?}
 	\begin{itemize}[<+->]
-		\item El dispositivo dispondrá de una pantalla LED que mostrara informacion de la cancion en reproducción, como Titulo, autor, album etc...
-		\item El usuario podrá programar un tiempo en que el dispositivo pueda iniciar o detener automáticamente la reproducción.
-		\item Adicionalmente, el dispositivo permitirá comenzar y pausar la reproducción cuando el usuario lo desee, como también adelantar y retroceder de canción. 
-		\item Las canciones que se reproducirán para las distintas vibras presentes en el ambiente se podrán configurar desde el computador.	
+		\item Los sensores monitorean la intensidad lumínica y sonora.
+		\item Luego, devuelven un voltaje en función de la intensidad detectada.
+		\item El microcontrolador captura esta información y determina el rango en el cual se encuentra.
+		\begin{itemize}[<+->]
+			\item Alto, Medio o Bajo.
+		\end{itemize}
+		\item El microcontrolador notifica al pc acerca del cambio en la intensidad detectada.
+		\item El software del PC modifica la lista de reproducción y el volumen en función de la instrucción del microcontrolador.
 	\end{itemize}
 \end{frame}
 %-----------------------------------------------
