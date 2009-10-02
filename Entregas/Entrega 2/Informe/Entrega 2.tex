@@ -49,6 +49,7 @@ describir las exigencias para el circuito (o sea poner la lista que aparece en e
 
 
 
+
 \section{Descripción del Diseño}
 introducción a esta parte, cuales son los componentes a conectar. y su funcionalidad\\
 
@@ -56,18 +57,37 @@ introducción a esta parte, cuales son los componentes a conectar. y su funcional
 explicar los diagramas. señalar que se tiene el diagrama de la placa controladora, con todas las conexiones y de manera independiente se tiene otro diagrama con las conexiones que vamos a implementar (osea, en el otro diagrama no tenemos las conexiones del pic a implementar).
 
 \subsection{Descripción de los componentes:}
+A continuación se describen los componentes a utilizar y la forma en que serán utilizados por nuestro circuito. 
+
 línea introductoria\\
 
 en esta parte, al describir el dispositivo asociado a uno de los requisitos (PWM, entrada analoga, interrupción) describir cómo esta satisface al requisito\\
 
 \subsubsection{Dispositivos análogos:}
+Nuestro sistema utilizará dispositivos análogos para capturar información del ambiente, en particular, el nivel de sonido y la intensidad lumínica.
+
 
 \textbf{1.Sensor de sonido (\emph{ZX-Sound})}\\
+
+	\begin{itemize}
+		\item Descripción: Este componente detecta el nivel de sonido del ambiente y genera un voltaje correspondiente cuyo valor fluctúa entre 0V y 5V.
+		\item Requisitos asociados: Entrada análoga y PWM para la conversión analógica digital del voltaje entregado por el componente.
+		\item Conexión al PIC: Puerto AN0 para leer el voltaje generado desde el componente.
+	\end{itemize}
 
 
 \textbf{2.Sensor de luminosidad (\emph{ZX-LDR})}
 
+	\begin{itemize}
+		\item Descripción: Este componente detecta el nivel de la intensidad lumínica del ambiente y genera un voltaje correspondiente cuyo valor fluctúa entre 0V y 5V.
+		\item Requisitos asociados: Entrada análoga y PWM para la conversión analógica digital del voltaje entregado por el componente.
+		\item Conexión al PIC: Puerto AN1 para leer el voltaje generado desde el componente.
+	\end{itemize}
+
+
 \subsubsection{\textsl{Display} LCD}
+Este componente será utilizado con el fin de mostrar información sobre la canción actual que se está reproduciendo en el computador conectado al dispositivo. Además indicará el valor actual del \textsl{timer} que permite apagar automáticamente el dispositivo transcurrido cierto tiempo.
+
 
 \subsubsection{Pulsadores}
 
