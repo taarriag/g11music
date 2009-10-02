@@ -43,14 +43,30 @@
 
 \newpage
 \section{Introducción}
+En diversas ocasiones y circunstancias, se desea reproducir música. Ésta puede ser música ambiental, para acompañar una junta social, o música de algún género particular para deleitarse escuchándola. Lamentablemente, muchas veces ocurre que esta música no es la adecuada al estado de ánimo del lugar. En muchas ocasiones, el nivel de ruido disminuye, pero la música se mantiene fuerte, dificultando la comunicación. En otras ocasiones el género de la música no es el adecuado para las circunstancias. Lo anterior causa que alguien deba encargarse de controlar constantemente la reproducción musical.\\
+
+Para solucionar el problema antes mencionado, en este proyecto semestral se desarrollará un dispositivo que controlará la reproducción musical de un computador. Este dispositivo consiste en un microcontrolador el cual estará conectado a un computador y tendrá dos sensores, uno medirá el nivel de ruido en el ambiente y el otro el nivel de luminosidad del ambiente. Ambos sensores entregarán tres posibles niveles de ruido o luminosidad, lo cual genera 9 combinaciones distintas. La combinación presente en el ambiente será enviada al computador el cual está corriendo un software diseñado para comunicarse con el dispositivo (aparte del software de reproducción de la música).  Éste elegirá una de entre 9 listas de reproducción distintas con su respectivo volumen. Estas listas podrán ser configuradas por el usuario. De esta forma, el dispositivo de manera automática controlará la música reproducida en cierto lugar ajustándola a las condiciones ambientales.\\
+
+Adicionalmente al control automático de la música, el dispositivo también permitirá comenzar y detener la reproducción junto con adelantar y retroceder de canción. Esto será a través de 3 botones puestos en el dispositivo: 1 de \textit{play/pause}, uno de \textit{forward} y un último de \textit{backward}. Además, el usuario podrá programar un \textit{timer} el cual tiene el tiempo en que el dispositivo pueda iniciar o detener automáticamente la reproducción. Esto se realiza con un botón, el cual al oprimirlo una vez, incrementará el tiempo de espera en una cantidad predefinida. Si se mantienen el botón oprimido por más de 3 segundos, se reestablecerá el tiempo de espera a 0. Por último, el dispositivo posee una pantalla LCD la cual permitirá mostrar el nombre de la canción reproducida, en conjunto con el tiempo actual del timer.\\
+
+Los requerimientos mínimos que debe cumplir el dispositivo son los siguientes:
+\begin{itemize}
+	\item Entradas y salidas digitales (DIO), para comunicarse con otros componentes digitales.
+	\item Entrada análoga: para comunicarse con un sensor análogo.
+	\item Comunicación bajo algún protocolo standard e.g. RS232, USB, I2C.
+	\item Módulo ADC/PWM: para convertir la señal entregada por el sensor análogo y utilizarla en el dispositivo.
+	\item Interrupciones programables.
+	\item \textit{Timer} interno programable.
+\end{itemize}
+
+
+
 describir el dispositivo que estamos haciendo(juntar los primeros parrafos de nuestro informe pasado)\\
 describir lo que hicimos en esta entrega(el diseño y todo eso, pero por encima, después se profundiza en este informe)\\
 describir las exigencias para el circuito (o sea poner la lista que aparece en el enunciado que tiene que es lo que debe hacer nuestro circuito: entradas análoga, interrupciones, el pic, etc)\\
 
 
-
-
-\section{Descripción del Diseño}
+\section{Descripción del Diseño (Diseño)}
 introducción a esta parte, cuales son los componentes a conectar. y su funcionalidad\\
 
 \subsection{Diagrama del circuito}
@@ -135,6 +151,7 @@ El MAX232 tiene como funcion convertir las señales del puerto serial RS-232 a TT
 \caption{Descripción de los pines max232}
 \end{table}
 %----------------------------------------
+comunicacion bidireccional con dispositivo externo.\\
 
 %----------------------------------------
 % Elementos Adicionales
