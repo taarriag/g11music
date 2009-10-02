@@ -103,7 +103,7 @@ El MAX232 tiene como funcion convertir las señales del puerto serial RS-232 a TT
 \begin{figure}
 	\label{fig:max232}
 	\begin{center}
-		\includegraphics[scale=1]{Images/Max232.PNG}
+		\includegraphics[scale=1]{Images/Max232.PNG}	
 	\end{center}
 	\caption{Diagrama del Max232}
 \end{figure}
@@ -113,20 +113,20 @@ El MAX232 tiene como funcion convertir las señales del puerto serial RS-232 a TT
 \label{tbl:pinesmax232}
 \begin{tabular}{|c|p{5cm}|c|}
 \hline Pin & Descripción & Conexión\\
-\hline C1+ &  &  \\ 
-\hline VS+ &  &  \\ 
-\hline C1- &  &  \\ 
-\hline C2+ &  &  \\ 
-\hline C2- &  &  \\ 
-\hline VS- &  &  \\ 
-\hline T2OUT &  &  \\ 
-\hline R2IN &  &  \\ 
-\hline R2OUT &  &  \\ 
-\hline T2IN &  &  \\ 
-\hline T1IN &  &  \\ 
-\hline R1OUT &  &  \\ 
-\hline R1IN &  &  \\ 
-\hline T1OUT &  &  \\ 
+\hline C1+ & Conexion a un condensador necesaria para su funcionamiento & C1- \\ 
+\hline VS+ & Voltaje de salida positivo (-15~-0.3[V]). Se conecta un condensador (1uF) & Tierra \\ 
+\hline C1- & Conexion a un condensador (1uF) necesaria para su funcionamiento & C1+ \\ 
+\hline C2+ & Conexion a un condensador (1uF) necesaria para su funcionamiento & C2- \\ 
+\hline C2- & Conexion a un condensador (1uF) necesaria para su funcionamiento & C2+ \\ 
+\hline VS- & Voltaje de salida negativo (-0.3~15[V]) Se conecta un condensador (1uF) & Tierra \\ 
+\hline T2OUT & Salida EIA-232 & Puerto serial \\ 
+\hline R2IN & Entrada EIA-232 2 & Puerto serial \\ 
+\hline R2OUT & Salida TTL/CMOS & Pic16F877A (RC5)\\ 
+\hline T2IN & Entrada TTL/CMOS & Pic16F877A (RC4)\\ 
+\hline T1IN & Entrada TTL/CMOS & Pic16F877A (RC6)\\ 
+\hline R1OUT & Salida TTL/CMOS  & Pic16F877A (RC7)\\ 
+\hline R1IN & Entrada EIA-232 1 & Puerto serial \\ 
+\hline T1OUT & Salida EIA-232 & Puerto serial \\ 
 \hline GND & Cable a tierra & Tierra \\ 
 \hline Vcc & Entrada de corriente continua. Entre 4.5 y 5.5 [V] & Fuente de poder \\ 
 \hline 
