@@ -94,11 +94,56 @@ Este componente será utilizado con el fin de mostrar información sobre la canció
 \subsubsection{PIC}
 aquí escribir todas las piezas asociadas al pic, los bornes, las resistencias, el boton conectado al puerto 1, el diamante, etc\\
 
+%-----------------------------------------
+% Max232 y Serial
+%-----------------------------------------
 \subsubsection{MAX232 y Conexión Serial}
-describir todas las cosas asociadas al max 232, dígase condensadores, etc\\
+El MAX232 tiene como funcion convertir las señales del puerto serial RS-232 a TTL para ser usadas por el PIC. Tiene 16 pines que seran explicados a continuacion (Ver el pic \ref{fig:max232} y sus pines \ref{tbl:pinesmax232}):
+%-----------------------------------------
+\begin{figure}
+	\label{fig:max232}
+	\begin{center}
+		\includegraphics[scale=1]{Images/Max232.PNG}
+	\end{center}
+	\caption{Diagrama del Max232}
+\end{figure}
+%-----------------------------------------
+\begin{table}
+\begin{center}
+\label{tbl:pinesmax232}
+\begin{tabular}{|c|p{5cm}|c|}
+\hline Pin & Descripción & Conexión\\
+\hline C1+ &  &  \\ 
+\hline VS+ &  &  \\ 
+\hline C1- &  &  \\ 
+\hline C2+ &  &  \\ 
+\hline C2- &  &  \\ 
+\hline VS- &  &  \\ 
+\hline T2OUT &  &  \\ 
+\hline R2IN &  &  \\ 
+\hline R2OUT &  &  \\ 
+\hline T2IN &  &  \\ 
+\hline T1IN &  &  \\ 
+\hline R1OUT &  &  \\ 
+\hline R1IN &  &  \\ 
+\hline T1OUT &  &  \\ 
+\hline GND & Cable a tierra & Tierra \\ 
+\hline Vcc & Entrada de corriente continua. Entre 4.5 y 5.5 [V] & Fuente de poder \\ 
+\hline 
+\end{tabular} 
+\end{center}
+\caption{Descripción de los pines max232}
+\end{table}
+%----------------------------------------
 
+%----------------------------------------
+% Elementos Adicionales
+%----------------------------------------
 \subsubsection{Elementos Adicionales:}
-poner el regulador del voltaje, algún pin no conectado al pic, etc, muy corto, una línea\\
+\begin{description}
+	\item[Regulador de voltaje] El regulador de voltaje nos permite mantener un voltaje controlado para los componentes 
+\end{description}
+%poner el regulador del voltaje, algún pin no conectado al pic, etc, muy corto, una línea\\
 
 
 
