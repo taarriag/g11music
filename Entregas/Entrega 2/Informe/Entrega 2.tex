@@ -80,33 +80,71 @@ línea introductoria\\
 en esta parte, al describir el dispositivo asociado a uno de los requisitos (PWM, entrada analoga, interrupción) describir cómo esta satisface al requisito\\
 
 \subsubsection{Dispositivos análogos:}
-Nuestro sistema utilizará dispositivos análogos para capturar información del ambiente, en particular, el nivel de sonido y la intensidad lumínica.
+Nuestro sistema utiliza dispositivos análogos para capturar información del ambiente, en particular, las intensidades sonora y lumínica. Estos dispositivos generan un voltaje cuyo valor fluctúa entre 0V y 5V que representa la intensidad capturada. Posteriormente, esta intensidad es convertida a un valor entre 0 y 127 (decimal) utilizando el módulo ADC del PIC. 
 
+Para realizar la conversión análogo digital se deben configurar los registros ADCON0 y ADCON1 del PIC. El primero controla el módulo conversor análogo a digital A/D y el segundo configura las funciones de los pines del puerto A (para utilizarlos como análogo o digital). La configuración debe permitir que se reciba primero el voltaje correspondiente a la intensidad sonora para luego convertirlo a binario y almacenarlo en memoria. Posteriormente se repite el proceso para la intensidad lumínica. En este caso, el registro ADCON1 indica que los pines donde se capturan las intensidades deben ser de lectura análoga y el registro ADCON0 coordinará el proceso de conversión, indicando cual es el pin sobre el cual se realizará la conversión y la señal de inicio para ésta. 
+\\ \\
+Los dispositivos análogos a utilizar son:  
+\begin{enumerate}
 
-\textbf{1.Sensor de sonido (\emph{ZX-Sound})}\\
+\item \textbf{Sensor de sonido (\emph{ZX-Sound})}\\
 
 	\begin{itemize}
-		\item Descripción: Este componente detecta el nivel de sonido del ambiente y genera un voltaje correspondiente cuyo valor fluctúa entre 0V y 5V.
-		\item Requisitos asociados: Entrada análoga y PWM para la conversión analógica digital del voltaje entregado por el componente.
+		\item Descripción: Este dispositivo detecta la intensidad sonora del ambiente y genera un voltaje correspondiente cuyo valor fluctúa entre 0V y 5V.
+		\item Requisitos asociados: ADC/PWM para la conversión analógica digital del voltaje entregado por el componente.
 		\item Conexión al PIC: Puerto AN0 para leer el voltaje generado desde el componente.
 	\end{itemize}
 
 
-\textbf{2.Sensor de luminosidad (\emph{ZX-LDR})}
+\item \textbf{Sensor de luminosidad (\emph{ZX-LDR})}
 
 	\begin{itemize}
-		\item Descripción: Este componente detecta el nivel de la intensidad lumínica del ambiente y genera un voltaje correspondiente cuyo valor fluctúa entre 0V y 5V.
-		\item Requisitos asociados: Entrada análoga y PWM para la conversión analógica digital del voltaje entregado por el componente.
+		\item Descripción: Este dispositivo detecta la intensidad lumínica del ambiente y genera un voltaje correspondiente cuyo valor fluctúa entre 0V y 5V.
+		\item Requisitos asociados: ADC/PWM para la conversión analógica digital del voltaje entregado por el componente.
 		\item Conexión al PIC: Puerto AN1 para leer el voltaje generado desde el componente.
 	\end{itemize}
-
-
+\end{enumerate}	
+	
+	En base al valor convertido de las intensidades se han definido tres niveles de intensidad\footnote{Estos valores están sujetos a cambios futuros}:
+	\begin{itemize}
+		\item Baja: Entre 0 y 42
+		\item Media: Entre 42 y 85
+		\item Alta: Entre 85 y 127
+	\end{itemize} 
+	
+	Tal como se mencionó anteriormente, estos niveles permiten al sistema decidir cual es la siguiente lista de reproducción y el volumen de ésta. 
+	
 \subsubsection{\textsl{Display} LCD}
-Este componente será utilizado con el fin de mostrar información sobre la canción actual que se está reproduciendo en el computador conectado al dispositivo. Además indicará el valor actual del \textsl{timer} que permite apagar automáticamente el dispositivo transcurrido cierto tiempo.
+	\begin{itemize}
+		\item Descripción: Display de 16 x 2 caracteres (2 lineas de hasta 16 caracteres). Dispone de once pines para la comunicación con el PIC y utiliza el chip HD44780 para su configuración y escritura.
+		\item Requisitos asociados: Entrada/Salida DIO Bidireccional. PIC envía instrucciones al \textsl{display} y éste a su vez notifica a través del RS/Flag al PIC acerca de la completitud de la instrucción.
+		\item Conexión al PIC: Pines de operación (D7,D6,D5,D4) del \textsl{display} conectados al Puerto C del PIC (RC0,RC1,RC2 Y RC3). Pines de estado y configuración (RS, RW y E) conectados al Puerto A del PIC (RA2,RA3 Y RA4). 
+	\end{itemize}
+                                                                                                                                                          	
+Este dispositivo es utilizado con el fin de mostrar información sobre la canción actual que se está reproduciendo en el computador conectado al dispositivo. Además indica el valor actual del \textsl{timer} que permite detener o iniciar automáticamente la reproducción de música.
+                                                                                                                       
+Este \textsl{display} posee once pines configuración: RS/Flag, Read/Write, Enable y Datos (D0 A D7). De todas formas ofrece la posibilidad de ser configurado utilizando siete pines, para lo cual es necesario enviar dos valores consecutivos por instrucción. En particular, hemos optado por la segunda opción a fin de utilizar una menor cantidad de puertos del PIC y porque no teníamos la cantidad suficiente de pines de un mismo puerto para enviar la instrucción completa. Las palabras de operación serán enviadas desde el Puerto C del PIC, para lo cual debemos configurar el registro TRISC de tal forma que los pines RC0, RC1, RC2 Y RC3 sean de salida 
 
-
+El proceso de escritura es guiado por las instrucciones enviadas desde el PIC, y consiste en la siguiente secuencia:
+	\begin{enumerate}
+		\item Inicializar el \textsl{display}, conectándolo a la fuente de voltaje y activando \textsl{Enable}.
+		\item Configurar el \textsl{display} para recibir operaciones de 4 bits y utilizar ambas lineas. 
+		\item Prender el cursor, iniciar el modo bajo el cual este se mueve automáticamente cada vez que se escribe una instrucción en la memoria DDRAM. En la práctica, esto es cada vez que ingresamos la instrucción para escribir un caracter.
+		\item Escribir datos en la memoria DDRAM. Este es el paso en el cual indicamos el caracter a imprimir en pantalla.
+		\item Continuar escribiendo datos hasta completar la linea y saltar a la siguiente linea.
+		\item Continuar escribiendo hasta terminar de imprimir el nombre de la canción y el estado del timer.
+		\item Resetear el cursor, indicándole que vuelva a la posición inicial (a fin de sobreescribir los datos mostrados en pantalla cuando cambie la canción)	
+	\end{enumerate}
+	
 \subsubsection{Pulsadores}
-
+	\begin{itemize}
+		\item Descripción: Botones que entregan un voltaje alto (5V) cuando detectan una pulsación.
+		\item Requisitos asociados: Entrada DIO en el PIC, usada para detectar la pulsación de un botón.
+		\item Conexión al PIC: Los cuatro botones a utilizar están conectados a pines del puerto B (RB1, RB2, RB3 Y RB4)
+	\end{itemize}
+	
+Nuestro sistema utiliza cuatro pulsadores (\textsl{pushbuttons}) para controlar la reproducción de música y el timer del dispositivo: \textls{play/pause, backward, forward, timer}. Cada vez que uno de estos es pulsado, se envía una voltaje positivo al PIC. Para leer estas señales como una entrada digital, se debe configurar el registro TRISB de tal forma que el pin asociado al botón sea de \textsl{input} digital. 
+	
 \subsubsection{PIC}
 aquí escribir todas las piezas asociadas al pic, los bornes, las resistencias, el boton conectado al puerto 1, el diamante, etc\\
 
