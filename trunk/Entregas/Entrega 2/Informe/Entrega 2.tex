@@ -33,7 +33,7 @@
 \item Tomás Arriagada
 \item Felipe Balbontín
 \item Gabriel Diéguez
-\item Javier Espinoza
+\item Javier Espinosa
 \item Sebastián Vicencio
 \end{itemize}
 
@@ -48,7 +48,7 @@ En diversas ocasiones y circunstancias, se desea reproducir música. Ésta puede s
 
 Para solucionar el problema antes mencionado, en este proyecto semestral se desarrollará un dispositivo que controlará la reproducción musical de un computador. Este dispositivo consiste en un microcontrolador el cual estará conectado a un computador y tendrá dos sensores, uno medirá el nivel de ruido en el ambiente y el otro el nivel de luminosidad del ambiente. Ambos sensores entregarán tres posibles niveles de ruido o luminosidad, lo cual genera 9 combinaciones distintas. La combinación presente en el ambiente será enviada al computador el cual está corriendo un software diseñado para comunicarse con el dispositivo (aparte del software de reproducción de la música).  Éste elegirá una de entre 9 listas de reproducción distintas con su respectivo volumen. Estas listas podrán ser configuradas por el usuario. De esta forma, el dispositivo de manera automática controlará la música reproducida en cierto lugar ajustándola a las condiciones ambientales.\\
 
-Adicionalmente al control automático de la música, el dispositivo también permitirá comenzar y detener la reproducción junto con adelantar y retroceder de canción. Esto será a través de 3 botones puestos en el dispositivo: 1 de \textit{play/pause}, uno de \textit{forward} y un último de \textit{backward}. Además, el usuario podrá programar un \textit{timer} el cual tiene el tiempo en que el dispositivo pueda iniciar o detener automáticamente la reproducción. Esto se realiza con un botón, el cual al oprimirlo una vez, incrementará el tiempo de espera en una cantidad predefinida. Si se mantienen el botón oprimido por más de 3 segundos, se reestablecerá el tiempo de espera a 0. Por último, el dispositivo posee una pantalla LCD la cual permitirá mostrar el nombre de la canción reproducida, en conjunto con el tiempo actual del \textit{timer}.\\
+Adicionalmente al control automático de la música, el dispositivo también permitirá comenzar y detener la reproducción junto con adelantar y retroceder de canción. Esto será a través de 3 botones puestos en el dispositivo: 1 de \textit{play/pause}, uno de \textit{forward} y un último de \textit{backward}. Además, el usuario podrá programar un \textit{timer} el cual tiene el tiempo en que el dispositivo pueda iniciar o detener automáticamente la reproducción. Esto se realiza con un botón, el cual al oprimirlo una vez, incrementará el tiempo de espera en una cantidad predefinida. \emph{Si se mantiene el botón oprimido por más de 3 segundos, se reestablecerá el tiempo de espera a 0}. Por último, el dispositivo posee una pantalla LCD la cual permitirá mostrar el nombre de la canción reproducida, en conjunto con el tiempo actual del \textit{timer}.\\
 
 Los requerimientos mínimos que debe cumplir el dispositivo son los siguientes:
 \begin{itemize}
@@ -83,7 +83,7 @@ Los componentes utilizados se presentarán en la siguiente tabla.
 		\hline  Sensor de Luz & ZX-LDR & \href{http://www.olimex.cl/pdf/ZX-LDR.pdf}{datasheet} & Detecta los niveles de luminosidad del ambiente. \\ 
 
 		\hline  Sensor de sonidos & ZX-Sound & \href{http://www.olimex.cl/pdf/INEX/ZX-sound_e.pdf}{datasheet} & Detecta el nivel de ruido ambiental. \\
-		\hline  Pulsadores & SP-1116 & - & Botones de play/pause, stop, backward, forward. \\
+		\hline  Pulsadores & SP-1116 & - & Botones de play/pause, backward, forward, timer. \\
 		\hline
 	
 	\end{tabular}
@@ -92,23 +92,25 @@ Los componentes utilizados se presentarán en la siguiente tabla.
 
 
 \subsection{Diagrama del circuito}
-Se presentará el diseño del circuito en dos diagramas. Primero se muestra el diagrama de la placa controladora con todas las conexiones posibles. Luego se muestra un segundo diagrama con las conexiones de los dispositivos externos a la placa. No se mostró ambos diseños en el mismo diagrama por motivos de orden.
+Se presentará el diseño del circuito en dos diagramas. Primero se muestra el diagrama de la placa controladora con todas las conexiones posibles (Figura: \ref{fig:PIC}). Luego se muestra un segundo diagrama con las conexiones de los dispositivos externos a la placa. No se mostró ambos diseños en el mismo diagrama por motivos de orden (Figura: \ref{fig:SmartMusic}). Es importante recalcar que las dos entradas análogas (sensor de sonido y el sensor de luminosidad, son representadas por dos potenciómetros por motivos de simulación. Esto se puede hacer ya que ambos sensores entregan un voltaje de entre 0V y 5V (como será explicado en la sección de implementación) al igual que el potenciómetro.
 
 \begin{figure}[h]
 	\centering
-		\includegraphics[width=1.0\textwidth]{../Diagramas/PIC.pdf}
+		\includegraphics[width=0.9\textwidth]{../Diagramas/PIC.pdf}
 	\caption{Diagrama de Placa Controladora}
 	\label{fig:PIC}
 \end{figure}
 
 \begin{figure}[h]
 	\centering
-		\includegraphics[width=0.8\textwidth]{../Diagramas/SmartMusic.pdf}
+		\includegraphics[width=0.9\textwidth]{../Diagramas/SmartMusic.pdf}
 	\caption{Diagrama Conexiones Externas}
 	\label{fig:SmartMusic}
 \end{figure}
 
 %explicar los diagramas. señalar que se tiene el diagrama de la placa controladora, con todas las conexiones y de manera independiente se tiene otro diagrama con las conexiones que vamos a implementar (osea, en el otro diagrama no tenemos las conexiones del pic a implementar).
+
+\newpage
 
 \subsection{Implementación del dispositivo}
 A continuación se explicará como se conectarán los distintos dispositivos, su configuración y la forma en que serán utilizados. 
@@ -186,11 +188,11 @@ El proceso de escritura es guiado por las instrucciones enviadas desde el PIC, y
 		\item Conexión al PIC: Los cuatro botones a utilizar están conectados a pines del puerto B cayos cambios puede ser detectados para lanzar una interrupción (RB4, RB5, RB6 Y RB7)
 	\end{itemize}
 	
-Nuestro sistema utiliza cuatro pulsadores (\textsl{pushbuttons}) para controlar la reproducción de música y el timer del dispositivo: \textsl{play/pause, backward, forward, timer}. Cada vez que uno de estos es pulsado, se envía un voltaje positivo al PIC. Para leer estas señales como una entrada digital, se debe configurar el registro TRISB de tal forma que los pines asociados a los botones sean de \textsl{input} digital. 
+Nuestro sistema utiliza cuatro pulsadores (\textsl{pushbuttons}) para controlar la reproducción de música y el timer del dispositivo: \textsl{play/pause, backward, forward, timer}. Cada vez que uno de estos es pulsado, se envía un voltaje positivo al PIC. Para leer estas señales como una entrada digital, se debe configurar el registro TRISB de tal forma que los pines asociados a los botones sean de \textsl{input} digital.\\
 
-Además de leer el Puerto B como entradas digitales, se deben activar las interrupciones al pulsarse un botón. Para ésto configuramos el registro INTCON indicándole que permita realizar interrupciones (activando el bit GIE de INTCON) y que éstas ocurran cada vez que se detectan cambios en los pines RB4 a RB7 (activando el bit RBIE de INTCON). 
+Además de leer el Puerto B como entradas digitales, se deben activar las interrupciones al pulsarse un botón. Para ésto configuramos el registro INTCON indicándole que permita realizar interrupciones (activando el bit GIE de INTCON) y que éstas ocurran cada vez que se detectan cambios en los pines RB4 a RB7 (activando el bit RBIE de INTCON).\\
 
-Cada vez que el usuario pulse un botón, se ejecutará una interrupción la cual deberá llevar a la ejecución de una subrutina. Esta subrutina se encarga de leer cual fue el botón pulsado y en función de éste determina la próxima acción del sistema (Iniciar/Detener, Próxima canción, Canción anterior, Activar \textsl{Timer}). En caso de que se pulse el botón de Activar \textsl{Timer}, se deberá habilitar la interrupción de Timer (activando el bit TOIE de INTCON) y en la subrutina se deberá asignar el tiempo en el cual se activará la interrupción. El tiempo se determina a partir de la cantidad de veces que el usuario pulsó el botón de Activar Timer (por cada pulsación se incrementa el tiempo en una cantidad predefinida). Después de cierta cantidad de pulsaciones se deshabilitará la interrupción de Timer, a fin de que el sistema no cambie su estado actual transcurrido cierto tiempo (es decir, no se iniciará/detendrá automáticamente la reproducción de música).
+Cada vez que el usuario pulse un botón, se ejecutará una interrupción la cual deberá llevar a la ejecución de una subrutina. Esta subrutina se encarga de leer cual fue el botón pulsado y en función de éste determina la próxima acción del sistema (Iniciar/Detener, Próxima canción, Canción anterior, Activar \textsl{Timer}). En caso de que se pulse el botón de Activar \textsl{Timer}, se deberá habilitar la interrupción de Timer (activando el bit TOIE de INTCON) y en la subrutina se deberá asignar el tiempo en el cual se activará la interrupción. El tiempo se determina a partir de la cantidad de veces que el usuario pulsó el botón de Activar Timer (por cada pulsación se incrementa el tiempo en una cantidad predefinida). Después de cierta cantidad de pulsaciones se deshabilitará la interrupción de Timer, a fin de que el sistema no cambie su estado actual transcurrido cierto tiempo (es decir, no se iniciará/detendrá automáticamente la reproducción de música).\\
 
 \subsubsection{PIC}
 aquí escribir todas las piezas asociadas al pic, los bornes, las resistencias, el botón conectado al puerto 1, el diamante, etc\\
@@ -257,104 +259,5 @@ comunicación bidireccional con dispositivo externo.\\
 	\item[Regulador de voltaje] El regulador de voltaje nos permite mantener un voltaje controlado para los componentes 
 \end{description}
 %poner el regulador del voltaje, algún pin no conectado al pic, etc, muy corto, una línea\\
-
-
-
-
-\newpage
-\Huge{Entrega Anterior:---------------------------------}
-
-
-
-\subsection{Descripción general}
-El dispositivo a realizar consiste en un controlador de reproducción de música. Básicamente, el controlador recibirá información del ambiente en que se encuentra, y en base a ésta controlará diversos aspectos de la reproducción de la música en un computador.
-
-\subsection{Funcionalidad}
-Nuestro dispositivo consistirá en un periférico para computador, el cual será capaz de controlar automáticamente la música que el computador se encuentra reproduciendo y su volumen según el ambiente. Para esto, el dispositivo deberá monitorear el ambiente con el fin de detectar cambios en la intensidad de luz y del ruido ambiental, regulando el tipo de música que se reproducirá y su volumen.
-Por ejemplo, si la luz ambiental es fuerte se tocará música movida, y si el ruido ambiental es bajo el volumen también lo será. De esta forma, nuestro dispositivo captará en cierta manera la \textit{vibra} del ambiente y así reproducirá la música adecuada.\\
-
-Adicionalmente al control automático de la música, el dispositivo permitirá comenzar y pausar la reproducción cuando el usuario lo desee, como también adelantar y retroceder de canción. Junto con lo anterior, el usuario podrá programar un tiempo en que el dispositivo pueda iniciar o detener automáticamente la reproducción. El tiempo ingresado se mostrará al usuario en una pantalla en conjunto con el nombre de la canción que se está reproduciendo.\\
-
-El dispositivo y las canciones que se reproducirán para las distintas \textit{vibras} presentes en el ambiente se podrán configurar desde un PC.\\
-
-\subsection{Características}
-Para poder realizar las funcionalidades definidas en el apartado anterior, el periférico debe estar compuesto por diferentes dispositivos. En primer lugar debe poseer un sensor que le permita detectar el ruido ambiente. De esta forma, cuando el ruido ambiente aumenta, el dispositivo determina un aumento del volumen de la música que está reproduciendo el computador. Junto con lo anterior, el dispositivo debe tener un sensor lumínico el cual permita medir la luminosidad del ambiente, determinando qué tipo de música reproducir. Luego, a través del análisis de los datos entregados por los dos sensores anteriores, el dispositivo controlará la reproducción de la música.\\
-
-Otra parte esencial del periférico es dar información al usuario. Para este fin utilizaremos una pantalla LCD de 16x2 caracteres, en la cual se mostrará tanto la información de la canción que se está reproduciendo (proporcionada por el computador y transmitida por el microcontrolador) como el tiempo restante en el timer de encendido/apagado.\\
-
-Finalmente, usaremos varios botones que permiten controlar la reproducción. Estos son los típicos de cualquier reproductor: play/pause, stop, forward y backward. De esta manera el usuario podrá controlar la reproducción de las canciones, pero siempre dentro del playlist definido por el microcontrolador a través de la información del ambiente. Incluimos además dos botones para controlar el \textit{timer}: uno para aumentar el tiempo y otro para resetearlo, de manera que el usuario pueda ingresar el tiempo que desee (en minutos preferentemente).\\
-
- 
-\newpage 
-\section{Dispositivos a utilizar}
-La siguiente tabla resume los dispositivos que se utilizarán en la construcción del proyecto.
-
-Para más información, es posible hacer click en las tiendas y datasheets.
-\begin{table}[h]
-	\begin{center}
-	\begin{tabular}{|c|c|c|c|c|p{4.0cm}|}
-		\hline  Nombre & Código  & Disponibilidad & Precio & Detalles & Uso \\ 
-		\hline  Microcontrolador PIC & PIC16F877A & \href{http://www.olimex.cl/product_info.php?products_id=159}{Olimex.cl}  & \verb@$@4,583 & \href{http://ww1.microchip.com/downloads/en/DeviceDoc/39582b.pdf}{datasheet} & Permite ejecutar las instrucciones asociadas a cambios en la luminosidad, el ruido del ambiente y el input del usuario.\\
-		\hline  16x2 Character LCD & GDM1602K & \href{http://www.olimex.cl/product_info.php?products_id=154}{Olimex.cl} & \verb@$@7,668 & \href{http://www.olimex.cl/pdf/LCD/GDM1602K.pdf}{datasheet} & Muestra información de la canción actual y del estado del ambiente. \\
-
-		\hline  Sensor de Luz & ZX-LDR & \href{http://www.olimex.cl/product_info.php?cPath=50_89&products_id=340}{Olimex.cl} & \verb@$@3,934 & \href{http://www.olimex.cl/pdf/ZX-LDR.pdf}{datasheet} & Detecta los niveles de luminosidad del ambiente. \\ 
-
-		\hline  Sensor de sonidos & ZX-Sound & \href{http://www.olimex.cl/product_info.php?cPath=50_95&products_id=408}{Olimex.cl} & \verb@$@4,900 & \href{http://www.olimex.cl/pdf/INEX/ZX-sound_e.pdf}{datasheet} & Detecta el nivel de ruido ambiental. \\
-		\hline  Pulsadores & SP-1116 & \href{http://www.casaroyal.cl/?seccion_id=FICHA&product_id=3718&category_id=1030}{Casa Royal} & \verb@$@100 c/u & - & Botones de play/pause, stop, backward, forward. \\
-		\hline
-	
-	\end{tabular}
-	\end{center}
-\end{table}
-
-\subsection{Microcontrolador PIC}
-\subsubsection{Datos Básicos}
-	\begin{itemize}
-		\item Modelo: PIC16F877A
-		\item Fabricante: Microchip
-		\item Descripción: Microcontrolador programable de 8 bits (bus de datos. Implementa la arquitectura harvard y utiliza 
-	\end{itemize}
-	
-\subsubsection{Características}
-	\begin{itemize}
-		\item Program Memory Type:	 Flash
- 		\item Program Memory (KB):	 14
- 		\item CPU Speed (MIPS):	 5
- 		\item RAM Bytes:	 368
- 		\item Data EEPROM (bytes):	 256
- 		\item Digital Communication Peripherals:	 1-A/E/USART, 1-MSSP(SPI/I2C)
- 		\item Capture/Compare/PWM Peripherals:	 2 CCP
- 		\item Timers:	 2 x 8-bit, 1 x 16-bit
- 		\item ADC:	 8 ch, 10-bit
- 		\item Comparators:	 2
-		\item Temperature Range (C):	 -40 to 125
- 		\item Operating Voltage Range (V):	 2 to 5.5
-		\item Pin Count	 40
-	\end{itemize}
-	
-\subsubsection{Aplicación}
-	El microcontrolador se encargará de ejecutar las instrucciones correspondientes en función de los cambios detectados en los diferentes dispositivos del sistema (computador principal y sensores). A continuación se presenta una lista con las funcionalidades que esperamos implementar utilizando el microcontrolador:
-	
-	\begin{itemize}
-		 \item \textbf{Detectar cambios en el ambiente:} A partir de la señal enviada desde los sensores, el microcontrolador deberá ejecutar instrucciones que produzcan cambios a nivel de software en el computador principal. Por ejemplo, cambiar la canción cuando la intensidad de la luz aumente/disminuya o bien cambiar el volúmen según el ruido del ambiente.
-		 \item \textbf{Comunicación bi-direccional con el pc:} El computador deberá enviar información sobre la canción actual que se está reproduciendo al microcontrolador y éste último deberá enviar la información sobre el ambiente, a partir de lo cual se decidirá la lista a reproducir y el volumen de la reproducción. También deberá notificar al computador si el usuario pulso alguno de los botones, a fin de ejecutar las instrucciones play/pause, stop, backward (canción anterior) y forward (siguiente canción). En principio, la comunicación se realizará a través del puerto serial.
-		 \item \textbf{Configurar el sistema:} Transformar input a la interfaz gráfica o a los controles físicos en instrucciones que permitan, por ejemplo, cambiar los niveles de intensidad de luz o ruido para los cuales se reproduce cierto tipo de música.
-		 \item \textbf{Modificar el display de la información:} Cada vez que se detecte un cambio en las variables sensadas o en la canción que se está reproduciendo, el microcontrolador deberá enviar la información a los dispositivos de display (16x2 character LCD y monitor del pc) de tal forma que éstos muestren información actualizada sobre el estado del sistema.
-		 \item \textbf{Controlar tiempos:} El sistema debe ser capaz de prenderse o apagarse automáticamente según el tiempo ingresado por el usuario al pulsar un botón. Para esto el microcontrolador recibirá la información y utilizando el timer deberá prender/apagar el sistema cuando llegue al tiempo definido.
-	\end{itemize}
-	
-\subsection{16x2 Character LCD}
-\subsubsection{Características}
-Utiliza el ampliamente conocido chip HD44780 para su interfaz en paralelo. El código para la interfaz está disponible gratuitamente. Se necesitan aproximadamente 11 pines I/O para controlar la pantalla LCD. Incluye un LED Backlight (para alumbrar el fondo de la pantalla).\footnote{Descripción obtenida de \href{http://www.olimex.cl/product_info.php?products_id=154}{Olimex.cl}.}
-
-\subsubsection{Aplicación}
-Se utilizará para mostrar información sobre la canción que se está reproduciendo, el estado de los sensores (intensidad alta/media/baja) y el tiempo del \textit{timer}. Esta información deberá ser enviada desde el microcontrolador. 
-
-\subsection{Sensores de Luz y de sonidos}
-\subsubsection{Características}
-Ambos sensores tienen una salida que devuelve un voltaje cuyo valor refleja la intensidad capturada.
-
-\subsubsection{Aplicación}
-Se encargan de capturar la intensidad lumínica y sonora del ambiente respectivamente, y enviaran la señal de voltaje correspondiente hacia el microcontrolador. La información de la intensidad será digitalizada por el microcontrolador. Según el rango en el cual se encuentre el voltaje, el microcontrolador le indicará al computador los niveles de intensidad, los que pueden tomar 3 valores posibles: alto, medio y bajo. Luego la canción a reproducir y el volumen serán determinados a partir de los niveles de intensidad.
 
 \end{document}
