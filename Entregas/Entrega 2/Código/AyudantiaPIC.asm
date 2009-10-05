@@ -1,4 +1,4 @@
-; Ayudantía 2, José Luis Honorato
+;Programa de prueba de PIC, Entrega 2, Grupo 11
 
 	list p=16f877a  ; Tipo dispositivo
 
@@ -29,7 +29,7 @@ PARTIDA
 	MOVLW H'FF' ; Todos los canales de A como input
 	MOVWF TRISA
 
-	MOVLW B'11000111' ; Todos los canales de C como input (Vamos a usar RC2 para el switch)
+	MOVLW B'11000111' ; RC3, RC4 y RC5 como output para los leds, los demás como input (RC2 se usará para el switch)
 	MOVWF TRISC
 
 	BCF STATUS,RP0
@@ -78,6 +78,8 @@ PARTIDA
 	MOVLW B'01000000'	;FOSC/8, CH0 por ahora, ADC=OFF
 	MOVWF ADCON0
 
+; Seteamos los niveles de corte para el potenciómetro de selección de leds
+
     MOVLW D'42'
     MOVWF LEVEL1
 
@@ -104,11 +106,11 @@ LOOP
 UBICAR
     BCF STATUS,C   ; Me aseguro de bajar el flag
     MOVF DIST,0    ; Vin formateado
-    SUBWF LEVEL1,0  ; (LEVEL) - (W) = (W)
+    SUBWF LEVEL1,0  ; (LEVEL1) - (W) = (W)
     BTFSS STATUS,C ; Según el resultado, activo el led correspondiente
-    BCF STATUS,C ; Si no hubo carry, DIST > LEVEL, si es igual se queda en LOW 
+    BCF STATUS,C ; Borro el bit de carry y salto a UBICAR2 
 	BTFSC STATUS,C	
-    CALL LED_LOW
+    CALL LED_LOW ; Prendo el led LOW
 	BTFSS STATUS,C
 	CALL UBICAR2 
     RETURN
@@ -116,26 +118,26 @@ UBICAR
 UBICAR2
     BCF STATUS,C   ; Me aseguro de bajar el flag
     MOVF DIST,0    ; Vin formateado
-	SUBWF LEVEL2,0  ; (LEVEL) - (W) = (W)
+	SUBWF LEVEL2,0  ; (LEVEL2) - (W) = (W)
     BTFSS STATUS,C ; Según el resultado, activo el led correspondiente
-    CALL LED_HIGH  ; Si no hubo carry, DIST > LEVEL, si es igual se queda en LOW 
+    CALL LED_HIGH  ; Prendo el led HIGH 
 	BTFSC STATUS,C	
-    CALL LED_MID
+    CALL LED_MID ; Prendo el led MID
     RETURN	
 
-LED_HIGH  ; RD2
+LED_HIGH  ; RC5
 	MOVLW B'00100000'
     MOVWF LED
     BCF STATUS,C
     RETURN
 
-LED_MID  ; RD1
+LED_MID  ; RC4
 	MOVLW B'00010000'
     MOVWF LED
 	BSF STATUS,C
     RETURN
 
-LED_LOW   ; RD0
+LED_LOW   ; RC3
 	MOVLW B'00001000'
     MOVWF LED
     BSF STATUS,C
@@ -144,9 +146,9 @@ LED_LOW   ; RD0
 LED_ON
 	MOVLW B'00000000'  ; Uso de clock interno, prescaler 1:4, Timer1 OFF
 	MOVWF T1CON
-	MOVLW B'11000111'
+	MOVLW B'11000111' 	; Borramos los bits de los leds del puerto C
 	ANDWF PORTC,0	
-    IORWF LED,0
+    IORWF LED,0			; Seteamos el bit del led actual
 	MOVWF PORTC
 	RETURN
 
@@ -190,9 +192,9 @@ CAMBIA_LED
 	RETURN
 
 PRENDE_LED
-	MOVLW B'11000111'
+	MOVLW B'11000111'  	; Apagamos los leds
 	ANDWF PORTC,1	
-	MOVF LED,0
+	MOVF LED,0			; Prendemos el led correspondiente
     IORWF PORTC,1
     BSF STATUS,Z
 	RETURN
