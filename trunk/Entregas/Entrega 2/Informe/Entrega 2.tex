@@ -163,12 +163,12 @@ Los dispositivos análogos a utilizar son:
 		\item GDM1602K
 		\item Descripción: Display de 16 x 2 caracteres (2 lineas de hasta 16 caracteres). Dispone de once pines para la comunicación con el PIC y utiliza el chip HD44780 para su configuración y escritura.
 		\item Requisitos asociados: Entrada/Salida DIO Bidireccional. PIC envía instrucciones al \textsl{display} y éste a su vez notifica a través del RS/Flag al PIC acerca de la completitud de la instrucción.
-		\item Conexión al PIC: Pines de operación (D7,D6,D5,D4) del \textsl{display} conectados al Puerto C del PIC (RC0,RC1,RC2 Y RC3). Pines de estado y configuración (RS, RW y E) conectados al Puerto A del PIC (RA2,RA3 Y RA4). 
+		\item Conexión al PIC: Pines del \textsl{display} (D7,D6,D5,D4,RS,RW,E) conectados al Puerto D del PIC (RD7,RD6,RD5,RD4,RD3,RD2,RD1).
 	\end{itemize}
                                                                                                                                                         
 Este dispositivo es utilizado con el fin de mostrar información sobre la canción actual que se está reproduciendo en el computador conectado al dispositivo. Además indica el valor actual del \textsl{timer} que permite detener o iniciar automáticamente la reproducción de música.\\
                                                                                                                        
-Este \textsl{display} posee once pines configuración: RS/Flag, Read/Write, Enable y Datos (D0 A D7). De todas formas ofrece la posibilidad de ser configurado utilizando siete pines, para lo cual es necesario enviar dos valores consecutivos por instrucción. En particular, hemos optado por la segunda opción a fin de utilizar una menor cantidad de puertos del PIC y porque no teníamos la cantidad suficiente de pines de un mismo puerto para enviar la instrucción completa. Las palabras de operación serán enviadas desde el Puerto C del PIC, para lo cual debemos configurar el registro TRISC de tal forma que los pines RC0, RC1, RC2 Y RC3 sean de salida \\
+Este \textsl{display} posee once pines configuración: RS/Flag, Read/Write, Enable y Datos (D0 A D7). De todas formas ofrece la posibilidad de ser configurado y usilizado haciendo uso siete pines, para lo cual es necesario enviar dos valores consecutivos por instrucción. En particular, hemos optado por la segunda opción a fin de utilizar una menor cantidad de pines en el PIC y porque no teníamos la cantidad suficiente de pines en un mismo puerto para enviar la instrucción completa (de 11 bits de largo). Las palabras de operación serán enviadas desde el Puerto D del PIC, para lo cual debemos configurar el registro TRISD de tal forma que los pines RD4, RD5, RD6 Y RD7 sean de salida digital.\\
 
 El proceso de escritura es guiado por las instrucciones enviadas desde el PIC, y consiste en la siguiente secuencia:
 	\begin{enumerate}
