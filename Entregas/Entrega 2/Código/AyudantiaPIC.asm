@@ -106,7 +106,7 @@ UBICAR
     MOVF DIST,0    ; Vin formateado
     SUBWF LEVEL1,0  ; (LEVEL) - (W) = (W)
     BTFSS STATUS,C ; Según el resultado, activo el led correspondiente
-    CALL LED_MID  ; Si no hubo carry, DIST > LEVEL, si es igual se queda en LOW 
+    BCF STATUS,C ; Si no hubo carry, DIST > LEVEL, si es igual se queda en LOW 
 	BTFSC STATUS,C	
     CALL LED_LOW
 	BTFSS STATUS,C
@@ -132,9 +132,6 @@ LED_HIGH  ; RD2
 LED_MID  ; RD1
 	MOVLW B'00010000'
     MOVWF LED
-	BTFSS STATUS,C
-    BCF STATUS,C
-	BTFSC STATUS,C
 	BSF STATUS,C
     RETURN
 
