@@ -176,7 +176,7 @@ El proceso de escritura es guiado por las instrucciones enviadas desde el PIC y 
 		\item Configurar el \textsl{display} para recibir operaciones de 4 bits y utilizar ambas lineas. 
 		\item Prender el cursor, iniciar el modo bajo el cual éste se mueve automáticamente cada vez que se escribe una instrucción en la memoria DDRAM. En la práctica, esto es cada vez que ingresamos la instrucción para escribir un caracter.
 		\item Escribir datos en la memoria DDRAM. Este es el paso en el cual indicamos el caracter a imprimir en pantalla.
-		\item Continuar escribiendo datos hasta completar la linea y saltar a la siguiente linea.
+		\item Continuar escribiendo datos hasta completar la línea y saltar a la siguiente línea.
 		\item Continuar escribiendo hasta terminar de imprimir el nombre de la canción y el estado del timer.
 		\item Resetear el cursor, indicándole que vuelva a la posición inicial (a fin de sobreescribir los datos mostrados en pantalla cuando cambie la canción)	
 	\end{enumerate}
@@ -192,7 +192,7 @@ Nuestro sistema utiliza cuatro pulsadores (\textsl{pushbuttons}) para controlar 
 
 Además de leer el Puerto B como entradas digitales, se deben activar las interrupciones al pulsarse un botón. Para ésto configuramos el registro INTCON indicándole que permita realizar interrupciones (activando el bit GIE de INTCON) y que éstas ocurran cada vez que se detectan cambios en los pines RB4 a RB7 (activando el bit RBIE de INTCON).\\
 
-Cada vez que el usuario pulse un botón, se ejecutará una interrupción la cual deberá llevar a la ejecución de una subrutina. Esta subrutina se encarga de leer cual fue el botón pulsado y en función de éste determina la próxima acción del sistema (Iniciar/Detener, Próxima canción, Canción anterior, Activar \textsl{Timer}). En caso de que se pulse el botón de Activar \textsl{Timer}, se deberá habilitar la interrupción de Timer (activando el bit TOIE de INTCON) y en la subrutina se deberá asignar el tiempo en el cual se activará la interrupción. El tiempo se determina a partir de la cantidad de veces que el usuario pulsó el botón de Activar Timer (por cada pulsación se incrementa el tiempo en una cantidad predefinida). Después de cierta cantidad de pulsaciones se deshabilitará la interrupción de Timer, a fin de que el sistema no cambie su estado actual transcurrido cierto tiempo (es decir, no se iniciará/detendrá automáticamente la reproducción de música).\\
+Cada vez que el usuario pulse un botón, se ejecutará una interrupción la cual deberá llevar a la ejecución de una subrutina. Esta subrutina se encarga de leer cuál fue el botón pulsado y en función de éste determina la próxima acción del sistema (Iniciar/Detener, Próxima canción, Canción anterior, Activar \textsl{Timer}). En caso de que se pulse el botón de Activar \textsl{Timer}, se deberá habilitar la interrupción de Timer (activando el bit TOIE de INTCON) y en la subrutina se deberá asignar el tiempo en el cual se activará la interrupción. El tiempo se determina a partir de la cantidad de veces que el usuario pulsó el botón de Activar Timer (por cada pulsación se incrementa el tiempo en una cantidad predefinida). Después de cierta cantidad de pulsaciones se deshabilitará la interrupción de Timer, a fin de que el sistema no cambie su estado actual transcurrido cierto tiempo (es decir, no se iniciará/detendrá automáticamente la reproducción de música).\\
 
 \subsubsection{PIC}
 	\begin{itemize}
