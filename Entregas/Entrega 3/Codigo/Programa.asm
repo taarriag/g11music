@@ -1,7 +1,7 @@
 ;-------------------;
 ; 1 Header          ;
 ;-------------------;
-	list p=16f877a         ; Le decimos al compilador que pic usamos
+	list p=16F877A         ; Le decimos al compilador que pic usamos
 	include <P16F877A.inc> ; Definicion de parametros y constantes.
 ;-------------------------------------------;
 ; 1.1 Definicion de Registros y variables	;
@@ -41,6 +41,8 @@
 ; 2 Configuracion                      ;
 ;--------------------------------------;
 	ORG	H'00'
+	movlw	0x07
+	movwf	CMCON
 	GOTO	START		; Vamos al inicio del programa
 	ORG	H'04'			
 	GOTO	INT	; Vamos a la subrutina de interrupcion
@@ -152,9 +154,9 @@ START
 ;--------------------------------------;
 ;2.6 Lcd							   ;
 ;--------------------------------------;
-	bcf		STATUS,RP0	;Vamos al banco 0	
-	call	LCD_Init	;Inicializamos el LCD
-	call	LCD_Inter1	;Imprimimos mensaje en LCD
+	bcf	STATUS,RP0	;Vamos al banco 0
+	call LCD_Init	;Inicializamos el LCD
+	call LCD_Inter1	;Interfaz del LCD	
 ;--------------------------------------;
 ;2.7 LOOP PRINCIPAL
 ;--------------------------------------;
@@ -514,6 +516,7 @@ HEX_Table
   	RETLW   0x45
    	RETLW   0x46
 ; Hasta aca es el codigo extraido de la pagina
+
 LCD_Num					;Recibe un numero en BCD (Mediante W) y lo imprime
 	movwf	tmp1		;Guardamos el numero en tmp1
 	bsf		tmp1,d'4'	
@@ -522,7 +525,6 @@ LCD_Num					;Recibe un numero en BCD (Mediante W) y lo imprime
 	call	LCD_Char
 	return	
 LCD_Inter1				;Escribre la interfaz del LCD
-	call LCD_Clr
 	call LCD_Line1
 	movlw	'L'
 	call LCD_Char
@@ -541,6 +543,7 @@ LCD_Inter1				;Escribre la interfaz del LCD
 	call LCD_Char
 	movlw	':'
 	call LCD_Char	
+	return
 ;--------------------------------------;
 ;3.5 Conversor byte a BCD			   ;
 ;--------------------------------------;
