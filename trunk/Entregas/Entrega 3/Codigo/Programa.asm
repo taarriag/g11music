@@ -155,8 +155,8 @@ START
 ;2.6 Lcd							   ;
 ;--------------------------------------;
 	bcf	STATUS,RP0	;Vamos al banco 0
-	call LCD_Init	;Inicializamos el LCD
-	call LCD_Inter1	;Interfaz del LCD	
+	CALL LCD_Init	;Inicializamos el LCD
+	CALL LCD_Inter1	;Interfaz del LCD
 ;--------------------------------------;
 ;2.7 LOOP PRINCIPAL
 ;--------------------------------------;
@@ -369,11 +369,44 @@ SND_HIGH
 ;Subrutina extraida directamente desde la ayudantia
 INT
 	BCF INTCON,GIE	;APAGO INTERRUPCIONES
-	BTFSC PIR1,TMR1IF  ; Si la interrupcion es por TMR1 overflow, voy al método
+;BTFSC PIR1,TMR1IF  ; Si la interrupcion es por TMR1 overflow, voy al método
 ;	CALL CONTAR
-    ; Aqui se pueden agregar otras interrupciones
-	BSF INTCON,GIE ;REACTIVO INTERRUPCIONES
-	RETURN
+    ; Hacemos polling de cada pin del puerto B (de RB4 a RB7)
+	BTFSC PORTB,4
+	GOTO PLAY_PAUSE
+	BTFSC PORTB,5
+	GOTO BACKWARD
+	BTFSC PORTB,6
+	GOTO FORWARD
+	BTFSC PORTB,7
+	GOTO TIMER	
+	
+FINALLY
+	BCF PORTD,7
+	BCF PORTD,6
+	BCF PORTD,5
+	BCF PORTD,4
+
+	;Bajo los flags de las interrupciones 
+	BCF	INTCON,RBIF		
+	
+	;reactivo la detección de interrupciones
+	BSF INTCON,RBIE
+	BSF INTCON,GIE 
+	RETURN	
+PLAY_PAUSE
+	;Rutina de play/pause
+	GOTO FINALLY
+BACKWARD
+	;Rutina de backward
+	GOTO FINALLY
+FORWARD
+	;Rutina de forward
+	GOTO FINALLY
+TIMER
+	;Rutina de timer
+	GOTO FINALLY
+
 
 ;--------------------------------------;
 ;3.4 Rutinas de LCD					   ;
