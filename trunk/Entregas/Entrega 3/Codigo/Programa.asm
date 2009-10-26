@@ -41,13 +41,31 @@
 ; 2 Configuracion                      ;
 ;--------------------------------------;
 	ORG	H'00'
-	movlw	0x07
-	movwf	CMCON
+	;movlw	0x07
+	;movwf	CMCON
 	GOTO	START		; Vamos al inicio del programa
+
+	
+
 	ORG	H'04'			
 	GOTO	INT	; Vamos a la subrutina de interrupcion
 	
+
+
+
 START	
+
+;-------------------------
+;bcf                 STATUS,0       ;make sure we are in bank 0
+;clrf                 01h               ;address of the other timer – TMR0
+;bsf                 STATUS,0       ;switch to bank 1
+;clrwdt                                 ;reset the WDT and prescaler
+;movlw             B'1111'            ;Select the new prescaler value and assign
+;movwf            OPTION_REG           ;it to WDT
+;bcf                 STATUS,0       ;come back to bank 0
+;-----------------------------------
+
+
 ;--------------------------------------;
 ; 2.1 Puertos                          ;
 ;--------------------------------------;
@@ -113,7 +131,7 @@ START
 	
 	;--------------------------------------------------------------------------------------
 	
-	;STATUS,RP0	; Vamos al banco 0
+	;BCF STATUS,RP0	; Vamos al banco 0
 	;movlw	b'11001000'
 	;movwf	INTCON		; Permisos de interrupcion: Global, Perifericos y RB4-RB7.
 	;movlw	b'01000000'
@@ -139,24 +157,27 @@ START
 	MOVWF	ADCON0
 ; Seteamos los niveles de corte para el potenciómetro de selección de leds
 
-    MOVLW D'42'
+    MOVLW D'30'
     MOVWF LDR_LEVEL1
 
-	MOVLW D'85'
+	MOVLW D'70'
     MOVWF LDR_LEVEL2
 ; Seteamos los niveles de corte para el potenciómetro de selección de leds
 
-    MOVLW D'42'
+    MOVLW D'20'
     MOVWF SND_LEVEL1
 
-	MOVLW D'85'
+	MOVLW D'50'
     MOVWF SND_LEVEL2
 ;--------------------------------------;
 ;2.6 Lcd							   ;
 ;--------------------------------------;
+	BCF	STATUS,RP1
 	bcf	STATUS,RP0	;Vamos al banco 0
-	CALL LCD_Init	;Inicializamos el LCD
-	CALL LCD_Inter1	;Interfaz del LCD
+
+	;CALL Delay100 	;wait for LCD to settle
+	;CALL LCD_Init	;Inicializamos el LCD
+	;CALL LCD_Inter1	;Interfaz del LCD	
 ;--------------------------------------;
 ;2.7 LOOP PRINCIPAL
 ;--------------------------------------;
@@ -168,7 +189,7 @@ LOOP
 	CALL LEER_SND
 	
 	CALL UBICAR_SND
-	
+	;CLRWDT
 	GOTO LOOP
 	
 	
@@ -260,16 +281,28 @@ UBICAR2_LDR_MID
 LDR_LOW
 	MOVLW	B'00000001'	;guardamos el dato del nivel 1
 	MOVWF	LDR_CURRENT_LEVEL
+
+	BCF PORTD,3
+	BSF	PORTD,2
+
 	RETURN
 	
 LDR_MID
 	MOVLW	B'00000010'
 	MOVWF	LDR_CURRENT_LEVEL
+
+	BSF	PORTD,3
+	BCF	PORTD,2
+
 	RETURN
 	
 LDR_HIGH
 	MOVLW	B'00000011'
 	MOVWF	LDR_CURRENT_LEVEL
+
+	BSF PORTD,3
+	BSF	PORTD,2
+
 	RETURN
 	
 ;--------------------------------------;
@@ -351,16 +384,28 @@ UBICAR2_SND_MID
 SND_LOW
 	MOVLW	B'00000001'	;guardamos el dato del nivel 1
 	MOVWF	SND_CURRENT_LEVEL
+
+	BCF PORTD,7
+	BSF	PORTD,6	
+
 	RETURN
 	
 SND_MID
 	MOVLW	B'00000010'
 	MOVWF	SND_CURRENT_LEVEL
+
+	BSF PORTD,7
+	BCF	PORTD,6
+	
 	RETURN
 	
 SND_HIGH
 	MOVLW	B'00000011'
 	MOVWF	SND_CURRENT_LEVEL
+
+	BSF PORTD,7
+	BSF	PORTD,6
+
 	RETURN
 ;--------------------------------------;
 ;3.3 INT: Rutina de interrupcion	   ;
@@ -372,39 +417,52 @@ INT
 ;BTFSC PIR1,TMR1IF  ; Si la interrupcion es por TMR1 overflow, voy al método
 ;	CALL CONTAR
     ; Hacemos polling de cada pin del puerto B (de RB4 a RB7)
-	BTFSC PORTB,4
+	BTFSS PORTB,4
 	GOTO PLAY_PAUSE
-	BTFSC PORTB,5
+	BTFSS PORTB,5
 	GOTO BACKWARD
-	BTFSC PORTB,6
+	BTFSS PORTB,6
 	GOTO FORWARD
-	BTFSC PORTB,7
+	BTFSS PORTB,7
 	GOTO TIMER	
 	
 FINALLY
-	BCF PORTD,7
-	BCF PORTD,6
-	BCF PORTD,5
-	BCF PORTD,4
+
+	BCF PORTB,7
+	BCF PORTB,6
+	BCF PORTB,5
+	BCF PORTB,4
 
 	;Bajo los flags de las interrupciones 
-	BCF	INTCON,RBIF		
+	BCF	INTCON,RBIF	
 	
 	;reactivo la detección de interrupciones
 	BSF INTCON,RBIE
 	BSF INTCON,GIE 
 	RETURN	
 PLAY_PAUSE
-	;Rutina de play/pause
+	;Rutina de play_pause
+	;Imprimimos uno en los leds
+	BCF	 PORTD,1
+	BSF  PORTD,0
 	GOTO FINALLY
 BACKWARD
 	;Rutina de backward
+	;imprimimos dos en los leds
+	BSF	 PORTD,1
+	BCF  PORTD,0
 	GOTO FINALLY
 FORWARD
 	;Rutina de forward
+	;Imprimimos trés en los leds
+	BSF  PORTD,1
+	BSF  PORTD,0
 	GOTO FINALLY
 TIMER
 	;Rutina de timer
+	;Imprimimos 0 en los bits
+	BCF	 PORTD,1
+	BCF	 PORTD,0
 	GOTO FINALLY
 
 
