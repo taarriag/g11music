@@ -3,6 +3,7 @@
 ;-------------------;
 	list p=16F877A         ; Le decimos al compilador que pic usamos
 	include <P16F877A.inc> ; Definicion de parametros y constantes.
+	EXTERN LCDInit, LCDBusy, LCDWrite, temp_wr
 ;-------------------------------------------;
 ; 1.1 Definicion de Registros y variables	;
 ;-------------------------------------------;
@@ -179,9 +180,11 @@ START
 ;--------------------------------------;
 	BCF	STATUS,RP1
 	bcf	STATUS,RP0	;Vamos al banco 0
-
-	CALL Delay1s 	;wait for LCD to settle
-	CALL LCD_Init	;Inicializamos el LCD
+	
+	call LCDInit
+	call LCDBusy
+;	CALL Delay1s 	;wait for LCD to settle
+;	CALL LCD_Init	;Inicializamos el LCD
 	;CALL LCD_Inter1	;Interfaz del LCD	
 ;--------------------------------------;
 ;2.7 LOOP PRINCIPAL
@@ -195,6 +198,55 @@ LOOP
 	
 	CALL UBICAR_SND
 	;CLRWDT
+
+	call LCDInit
+	call LCDBusy
+
+	movlw 'L'
+	movwf temp_wr
+	call LCDWrite
+	call LCDBusy
+
+	movlw ':'
+	movwf temp_wr
+	call LCDWrite
+	call LCDBusy
+
+	movlw ' '
+	movwf temp_wr
+	call LCDWrite
+	call LCDBusy
+
+	movlw LDR_CURRENT_LEVEL
+	movwf temp_wr
+	call LCDWrite
+	call LCDBusy
+
+	movlw ' '
+	movwf temp_wr
+	call LCDWrite
+	call LCDBusy
+
+	movlw 'S'
+	movwf temp_wr
+	call LCDWrite
+	call LCDBusy
+
+	movlw ':'
+	movwf temp_wr
+	call LCDWrite
+	call LCDBusy
+
+	movlw ' '
+	movwf temp_wr
+	call LCDWrite
+	call LCDBusy
+
+	movlw SND_CURRENT_LEVEL
+	movwf temp_wr
+	call LCDWrite
+	call LCDBusy
+
 	GOTO LOOP
 	
 Stop	clrwdt
