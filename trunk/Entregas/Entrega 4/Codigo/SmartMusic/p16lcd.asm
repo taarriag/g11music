@@ -5,8 +5,8 @@
 ;*		lcd16.asm			 			*
 ;************************************************************************
 
-	list 		p=16F877a
-	#include	P16F877a.inc
+	list 		p=16F877
+	#include	P16F877.inc
 
 #define	LCD_D4		PORTD, 0	; LCD data bits
 #define	LCD_D5		PORTD, 1
@@ -26,13 +26,13 @@
 ;#define	LCD_RW_DIR	TRISA, 2	
 ;#define	LCD_RS_DIR	TRISA, 3	
 ;
-#define	LCD_E		PORTD, 6	; LCD E clock
-#define	LCD_RW		PORTD, 5	; LCD read/write line
-#define	LCD_RS		PORTD, 4	; LCD register select line
+#define	LCD_E		PORTD, 7	; LCD E clock
+#define	LCD_RW		PORTD, 6	; LCD read/write line
+#define	LCD_RS		PORTD, 5	; LCD register select line
 
-#define	LCD_E_DIR	TRISD, 6	
-#define	LCD_RW_DIR	TRISD, 5	
-#define	LCD_RS_DIR	TRISD, 4	
+#define	LCD_E_DIR	TRISD, 7	
+#define	LCD_RW_DIR	TRISD, 6	
+#define	LCD_RS_DIR	TRISD, 5	
 
 #define	LCD_INS		0	
 #define	LCD_DATA	1
@@ -47,186 +47,7 @@ temp_rd		res	1
 
 	GLOBAL	temp_wr
 
-	
-org	0x0000
-		;movlw	0x07
-		;movwf	CMCON			;turn comparators off (make it like a 16F84)
-
-Initialise	
-		clrf	PORTA
-		clrf	PORTB
-		clrf	PORTC
-		clrf	PORTD
-
-
-		bsf 	STATUS,		RP0	;select bank 1
-		movlw	0x00			;make all pins outputs
-		movwf	TRISD
-		bcf 	STATUS,		RP0	;select bank 0
-
-		call LCDInit
-		movlw 'H'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw 'o'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw 'l'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw 'i'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw ' '
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw 't'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw 'e'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw 'n'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw 'i'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw ' '
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw 'p'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw 'o'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw 'l'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw 'o'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw 'l'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw 'i'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw 'B'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw 'u'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw 'e'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw 'n'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw 'o'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw ' '
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw 'c'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw 'h'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw 'i'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw 'c'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw 'o'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw 's'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw '!'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw '!'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw '!'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw '!'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw '!'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw '!'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw '!'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw '!'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw '!'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw '!'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw '!'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw '!'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-StopNow clrwdt
-goto StopNow
+PROG1	CODE
 
 
 ;***************************************************************************
@@ -288,10 +109,6 @@ LCDInit
 	banksel	PORTD
 	bsf		PORTD,7
 	call	Delay30ms
-	call	Delay30ms
-	call	Delay30ms
-	call	Delay30ms
-	call	Delay30ms
 	clrf	PORTA
 	
 	banksel	TRISA			;configure control lines
@@ -299,9 +116,9 @@ LCDInit
 	bcf	LCD_RW_DIR
 	bcf	LCD_RS_DIR
 	
-	movlw	b'00001110'
-	banksel	ADCON1
-	movwf	ADCON1	
+;	movlw	b'00001110'
+;	banksel	ADCON1
+;	movwf	ADCON1	
 
 	movlw	0xff			; Wait ~15ms @ 20 MHz
 	banksel	COUNTER
@@ -309,10 +126,6 @@ LCDInit
 	movlw	0xFF
 	banksel	delay
 	movwf	delay
-	call	DelayXCycles
-	call	DelayXCycles
-	call	DelayXCycles
-	call	DelayXCycles
 	call	DelayXCycles
 	decfsz	COUNTER, F
 	goto	$-3
@@ -328,10 +141,6 @@ LCDInit
 	movlw	0xFF
 	movwf	delay
 	call	DelayXCycles
-	call	DelayXCycles
-	call	DelayXCycles
-	call	DelayXCycles
-	call	DelayXCycles
 	decfsz	COUNTER, F
 	goto	$-3
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -346,10 +155,6 @@ LCDInit
 	movlw	0xFF			;Wait ~100us @ 20 MHz
 	movwf	delay
 	call	DelayXCycles
-	call	DelayXCycles
-	call	DelayXCycles
-	call	DelayXCycles
-	call	DelayXCycles
 ;28--08						
 ;	movlw	b'0011000'		;#3 Send control sequence
 	movlw	b'10000000'
@@ -360,10 +165,6 @@ LCDInit
 		;test delay
 	movlw	0xFF			;Wait ~100us @ 20 MHz
 	movwf	delay
-	call	DelayXCycles
-	call	DelayXCycles
-	call	DelayXCycles
-	call	DelayXCycles
 	call	DelayXCycles
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -384,10 +185,6 @@ LCDInit
 
 
 	call	Delay1ms
-	call	Delay1ms
-	call	Delay1ms
-	call	Delay1ms
-	call	Delay1ms
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;0x01
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -407,22 +204,6 @@ LCDInit
 	call	LongDelay ;2ms
 	call	LongDelay ;2ms
 	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;0x02
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -437,34 +218,6 @@ LCDInit
 	call	LCDWriteNibble
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;	rcall	LCDBusy			;Busy?
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
-	call	LongDelay ;2ms
 	call	LongDelay ;2ms
 	call	LongDelay ;2ms
 	call	LongDelay ;2ms
@@ -509,10 +262,6 @@ LCDInit
 ;	call	LCDWrite
 
 
-	call	Delay1ms
-	call	Delay1ms
-	call	Delay1ms
-	call	Delay1ms
 	call	Delay1ms
 	return
 
@@ -702,10 +451,6 @@ FinRd
 
 ; *******************************************************************
 LCDBusy
-	call	LongDelayLast
-	call	LongDelayLast
-	call	LongDelayLast
-	call	LongDelayLast
 	call	LongDelayLast
 ;	call	LongDelay
 	return
