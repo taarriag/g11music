@@ -43,6 +43,7 @@
 	del0		res 1
 	del1		res 1
 	del2		res 1
+	COUNT		res 1
 ;--------------------------------------;
 ; 2 Configuracion                      ;
 ;--------------------------------------;
@@ -187,28 +188,39 @@ START
 ;	CALL Delay1s 	;wait for LCD to settle
 ;	CALL LCD_Init	;Inicializamos el LCD
 	;CALL LCD_Inter1	;Interfaz del LCD	
+
+	movlw b'11111111'
+	movwf COUNT
+
 ;--------------------------------------;
 ;2.7 LOOP PRINCIPAL
 ;--------------------------------------;
 LOOP
 
 	CALL LEER_LDR
-	
-	;Me cambio al bando 1 para setear el valor
-	BCF STATUS,RP1
-	BCF STATUS,RP0
 	CALL UBICAR_LDR
 	
 	CALL LEER_SND
-	
-	BCF STATUS,RP1
-	BCF STATUS,RP0
 	CALL UBICAR_SND
 	CLRWDT
 
+	decf COUNT,1
+	btfsc STATUS,Z
+	call Write_LCD
+
+	GOTO LOOP
+	
+Stop	clrwdt
+goto	Stop			;endless loop
+;--------------------------------------;
+; 3 Subrutinas                         ;
+;--------------------------------------;
+
+Write_LCD
 	movlw	b'00000001'		;#7   Display Clear
 	movwf	temp_wr
 	call	i_write
+	call LCDBusy
 	call LCDBusy
 
 	movlw 'L'
@@ -226,8 +238,10 @@ LOOP
 	call d_write
 	call LCDBusy
 
-	movlw LDR_CURRENT_LEVEL
+	movf LDR_CURRENT_LEVEL,0
 	movwf temp_wr
+	bsf temp_wr,4
+	bsf temp_wr,5
 	call d_write
 	call LCDBusy
 
@@ -251,19 +265,17 @@ LOOP
 	call d_write
 	call LCDBusy
 
-	movlw SND_CURRENT_LEVEL
+	movf SND_CURRENT_LEVEL,0
 	movwf temp_wr
+	bsf temp_wr,4
+	bsf temp_wr,5
 	call d_write
 	call LCDBusy
 
-	GOTO LOOP
+	movlw b'11111111'
+	movwf COUNT
 	
-Stop	clrwdt
-goto	Stop			;endless loop
-;--------------------------------------;
-; 3 Subrutinas                         ;
-;--------------------------------------;
-
+	return
 ;--------------------------------------;
 ;3.1 LDR: Lectura y asignacion de nivel;
 ;--------------------------------------;
