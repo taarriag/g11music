@@ -26,13 +26,13 @@
 ;#define	LCD_RW_DIR	TRISA, 2	
 ;#define	LCD_RS_DIR	TRISA, 3	
 ;
-#define	LCD_E		PORTD, 6	; LCD E clock
-#define	LCD_RW		PORTD, 5	; LCD read/write line
-#define	LCD_RS		PORTD, 4	; LCD register select line
+#define	LCD_E		PORTD, 7	; LCD E clock
+#define	LCD_RW		PORTD, 6	; LCD read/write line
+#define	LCD_RS		PORTD, 5	; LCD register select line
 
-#define	LCD_E_DIR	TRISD, 6	
-#define	LCD_RW_DIR	TRISD, 5	
-#define	LCD_RS_DIR	TRISD, 4	
+#define	LCD_E_DIR	TRISD, 7	
+#define	LCD_RW_DIR	TRISD, 6	
+#define	LCD_RS_DIR	TRISD, 5	
 
 #define	LCD_INS		0	
 #define	LCD_DATA	1
@@ -65,166 +65,171 @@ Initialise
 		bcf 	STATUS,		RP0	;select bank 0
 
 		call LCDInit
+		call LCDBusy
 		movlw 'H'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw 'o'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw 'l'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw 'i'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw ' '
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw 't'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw 'e'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw 'n'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw 'i'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw ' '
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw 'p'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw 'o'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw 'l'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw 'o'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw 'l'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw 'i'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
+		call LCDBusy
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		call Delay30ms
+		movlw b'00000001'
+		movwf temp_wr
+		call i_write
 		call LCDBusy
 		movlw 'B'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw 'u'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw 'e'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw 'n'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw 'o'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw ' '
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw 'c'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw 'h'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw 'i'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw 'c'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw 'o'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw 's'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
 		movlw '!'
 		movwf temp_wr
-		call LCDWrite
+		call d_write
 		call LCDBusy
-		movlw '!'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw '!'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw '!'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw '!'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw '!'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw '!'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw '!'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw '!'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw '!'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw '!'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
-		movlw '!'
-		movwf temp_wr
-		call LCDWrite
-		call LCDBusy
+
+
 StopNow clrwdt
 goto StopNow
 
