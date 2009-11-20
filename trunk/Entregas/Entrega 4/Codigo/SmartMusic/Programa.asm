@@ -3,7 +3,7 @@
 ;-------------------;
 	list p=16F877A         ; Le decimos al compilador que pic usamos
 	include <P16F877A.inc> ; Definicion de parametros y constantes.
-	EXTERN LCDInit, LCDBusy, LCDWrite, temp_wr
+	EXTERN LCDInit, LCDBusy, i_write, d_write, temp_wr
 ;-------------------------------------------;
 ; 1.1 Definicion de Registros y variables	;
 ;-------------------------------------------;
@@ -87,7 +87,7 @@ START
 	MOVLW 	B'11000000' ; Configuramos el puerto C para conexion al MAX232 (RC7 Y RC6 input) y como output en el resto de los bits.
 	MOVWF 	TRISC
 	
-	MOVLW 	B'00000000' ; Configuramos el puerto D como output hacia el LCD y RD5 como input para recibir el flag del LCD. 
+	MOVLW 	B'00000000' ; Configuramos el puerto D como output hacia el LCD. 
 	MOVWF	TRISD
 	
 	BCF 	STATUS,RP0 	;Vamos al banco 0
@@ -183,6 +183,7 @@ START
 	
 	call LCDInit
 	call LCDBusy
+
 ;	CALL Delay1s 	;wait for LCD to settle
 ;	CALL LCD_Init	;Inicializamos el LCD
 	;CALL LCD_Inter1	;Interfaz del LCD	
@@ -190,6 +191,7 @@ START
 ;2.7 LOOP PRINCIPAL
 ;--------------------------------------;
 LOOP
+
 	CALL LEER_LDR
 	
 	CALL UBICAR_LDR
@@ -197,54 +199,56 @@ LOOP
 	CALL LEER_SND
 	
 	CALL UBICAR_SND
-	;CLRWDT
+	CLRWDT
 
-	call LCDInit
+	movlw	b'00000001'		;#7   Display Clear
+	movwf	temp_wr
+	call	i_write
 	call LCDBusy
 
 	movlw 'L'
 	movwf temp_wr
-	call LCDWrite
+	call d_write
 	call LCDBusy
 
 	movlw ':'
 	movwf temp_wr
-	call LCDWrite
+	call d_write
 	call LCDBusy
 
 	movlw ' '
 	movwf temp_wr
-	call LCDWrite
+	call d_write
 	call LCDBusy
 
 	movlw LDR_CURRENT_LEVEL
 	movwf temp_wr
-	call LCDWrite
+	call d_write
 	call LCDBusy
 
 	movlw ' '
 	movwf temp_wr
-	call LCDWrite
+	call d_write
 	call LCDBusy
 
 	movlw 'S'
 	movwf temp_wr
-	call LCDWrite
+	call d_write
 	call LCDBusy
 
 	movlw ':'
 	movwf temp_wr
-	call LCDWrite
+	call d_write
 	call LCDBusy
 
 	movlw ' '
 	movwf temp_wr
-	call LCDWrite
+	call d_write
 	call LCDBusy
 
 	movlw SND_CURRENT_LEVEL
 	movwf temp_wr
-	call LCDWrite
+	call d_write
 	call LCDBusy
 
 	GOTO LOOP
