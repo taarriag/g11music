@@ -72,12 +72,12 @@ d_write					;write data
 	call	LCDBusy
 	bsf	STATUS, C	
 	call	LCDWrite
-	banksel	TXREG			;move data into TXREG 
-	movwf	TXREG
-	banksel	TXSTA
-	btfss	TXSTA,TRMT		;wait for data TX
-	goto	$-1
-	banksel	PORTA	
+;	banksel	TXREG			;move data into TXREG 
+;	movwf	TXREG
+;	banksel	TXSTA
+;	btfss	TXSTA,TRMT		;wait for data TX
+;	goto	$-1
+;	banksel	PORTA	
 	return
 	GLOBAL	d_write
 	
