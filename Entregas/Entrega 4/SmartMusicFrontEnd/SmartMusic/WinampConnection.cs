@@ -8,11 +8,15 @@ using System.Diagnostics;
 
 namespace SmartMusic
 {
+    public delegate void TrackChangedEventHandler(string song);
+
     public class WinampConnection
     {
         private int ldr_level;
         private int snd_level;
         Process winamp;
+        private string currentSong;
+        public event TrackChangedEventHandler TrackChanged;
 
         public WinampConnection()
         {
@@ -36,15 +40,20 @@ namespace SmartMusic
         /// <param name="text">String en el cual deben estar escritos los niveles (en decimal)</param>
         public void GetNewLevels(string text)
         {
-            char[] levels = text.ToCharArray();
-            int new_ldr_level = (int)levels[0];
-            int new_snd_level = (int)levels[1];
-            if(new_ldr_level != ldr_level || new_snd_level != snd_level)
+            int max = Int32.Parse(text);
+            if (max <= 33 && max>=11)
             {
-                ChangePlaylist(new_ldr_level,new_snd_level);
-                ldr_level = new_ldr_level;
-                snd_level = new_snd_level; 
+                char[] levels = text.ToCharArray();
+                int new_ldr_level = (int)max/10;
+                int new_snd_level = (int)max%10;
+                if (new_ldr_level != ldr_level || new_snd_level != snd_level)
+                {
+                    ChangePlaylist(new_ldr_level, new_snd_level);
+                    ldr_level = new_ldr_level;
+                    snd_level = new_snd_level;
+                }
             }
+            
         }
 
         /// <summary>
@@ -55,9 +64,13 @@ namespace SmartMusic
         /// <param name="new_snd_level">Nuevo nivel de sonido</param>
         public void ChangePlaylist(int new_ldr_level,int new_snd_level)
         {
-            string pl = "" + new_ldr_level + new_snd_level;
-            winamp.StartInfo = new ProcessStartInfo("Winamp", pl + ".m3u");
-            winamp.Start();
+            if (new_ldr_level <= 4 && new_snd_level <= 4)
+            {
+                string pl = "" + new_ldr_level + new_snd_level;
+                winamp.StartInfo = new ProcessStartInfo("Winamp", pl + ".m3u");
+                winamp.Start();
+            }
+            
         }
 
 
@@ -70,7 +83,10 @@ namespace SmartMusic
             switch (action_id)
             {
                 case 1:
-                    WinampLib.Play();
+                    if (WinampLib.GetPlaybackStatus()==0)
+                        WinampLib.Play();
+                    else
+                        WinampLib.Pause();
                     break;
                 case 2:
                     WinampLib.PrevTrack();
@@ -80,6 +96,16 @@ namespace SmartMusic
                     break;
                 default:
                     break;
+            }
+        }
+
+        public void ActualizarTrack()
+        {
+            if (!WinampLib.GetCurrentSongTitle().Equals(currentSong, StringComparison.CurrentCultureIgnoreCase))
+            {
+                currentSong = WinampLib.GetCurrentSongTitle();
+                if (TrackChanged != null)
+                    TrackChanged(currentSong);
             }
         }
         
