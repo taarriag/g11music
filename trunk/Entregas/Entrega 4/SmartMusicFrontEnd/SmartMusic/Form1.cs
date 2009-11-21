@@ -28,7 +28,15 @@ namespace SmartMusic
                 }
             }
 
+            winampConnection.TrackChanged += new TrackChangedEventHandler(winampConnection_TrackChanged);
+            
+
             this.InitializePorts();
+        }
+
+        void winampConnection_TrackChanged(string song)
+        {
+            serialComm.Send(song);
         }
 
         private void InitializePorts()
@@ -45,6 +53,8 @@ namespace SmartMusic
         {
             serialComm = new SerialComm(this.portComboBox.SelectedItem.ToString());
             serialComm.IncomingInfoEvent+=new IncomingInfoEventHandler(winampConnection.GetNewLevels);
+            serialComm.Start();
+            //serialComm.Send('h');
         }
 
 

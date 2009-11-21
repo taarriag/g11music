@@ -74,10 +74,17 @@ namespace SmartMusic
             byte[] buffer = new byte[sp.ReadBufferSize];
             int count = 0;
             string readed_line = "";
+
+            //readed_line += sp.ReadByte();
+            sp.Read(buffer, sp.ReadBufferSize * count, sp.ReadBufferSize);
+            readed_line += buffer[0];
+            /*
             while (sp.BytesToRead > 0)
             {
                 readed_line += sp.Read(buffer, sp.ReadBufferSize * count, sp.ReadBufferSize);
+                //readed_line += sp.Read(buffer, sp.ReadBufferSize * count, 1);
             }
+             */ 
             ProcReceived(readed_line);
         }
 

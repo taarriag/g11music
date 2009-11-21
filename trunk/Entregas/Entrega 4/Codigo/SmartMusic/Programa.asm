@@ -44,6 +44,9 @@
 	del1		res 1
 	del2		res 1
 	COUNT		res 1
+
+	;VARIABLES USADAS POR INTERRUPCION SERIAL
+	temp_serial res 1
 ;--------------------------------------;
 ; 2 Configuracion                      ;
 ;--------------------------------------;
@@ -124,9 +127,25 @@ START
 	BCF 	STATUS,RP1 	;Vamos al banco1
 	BSF 	STATUS,RP0	
 	
-	MOVLW B'00000001'	; Activo la interrupcion Timer1 Overflow
+	;MOVLW B'00000001'	; Activo la interrupcion Timer1 Overflow
+	MOVLW B'00100001' 
+
 	MOVWF PIE1			; Aqui se puede usar la interr. del USART, etc.
     
+;CONFIGURACION CONEXION SERIAL
+	;CONFIGURACION TX y RX
+	MOVLW B'00100000'	;Asincrono y 8 bits
+	MOVWF TXSTA
+	MOVLW d'31'			;9600bps @ 20 MHz
+	MOVWF SPBRG
+	BCF STATUS,RP0
+	BCF STATUS,RP1	;BANCO 0
+	MOVLW B'10010000'	;Enable
+	MOVWF RCSTA
+
+
+
+
 	BCF STATUS,RP0
 	BCF STATUS,RP1	; BANCO 0
 	
@@ -202,11 +221,20 @@ LOOP
 	
 	CALL LEER_SND
 	CALL UBICAR_SND
+	
 	CLRWDT
 
 	decf COUNT,1
 	btfsc STATUS,Z
 	call Write_LCD
+
+	MOVF LDR_CURRENT_LEVEL,0
+	CALL MULT10
+
+	MOVF SND_CURRENT_LEVEL,0
+	addwf temp_serial,0
+	
+	CALL ENVIAR
 
 	GOTO LOOP
 	
@@ -215,6 +243,21 @@ goto	Stop			;endless loop
 ;--------------------------------------;
 ; 3 Subrutinas                         ;
 ;--------------------------------------;
+MULT10
+	movwf temp_serial
+	addwf temp_serial,0
+    addwf temp_serial,0
+    addwf temp_serial,0
+    addwf temp_serial,0
+	addwf temp_serial,0
+	addwf temp_serial,0
+	addwf temp_serial,0
+	addwf temp_serial,0
+	addwf temp_serial,0
+	movwf temp_serial
+
+	return
+
 
 Write_LCD
 	movlw	b'00000001'		;#7   Display Clear
@@ -496,6 +539,12 @@ INT
 ;BTFSC PIR1,TMR1IF  ; Si la interrupcion es por TMR1 overflow, voy al método
 ;	CALL CONTAR
     ; Hacemos polling de cada pin del puerto B (de RB4 a RB7)
+
+;INTERRUPCIONES DESDE SERIAL
+	BTFSC PIR1,RCIF
+	CALL RECIBIRYCONTESTAR
+
+;INTERRUPCIONES DE BOTON
 	BTFSS PORTB,4
 	GOTO PLAY_PAUSE
 	BTFSS PORTB,5
@@ -518,7 +567,38 @@ FINALLY
 	;reactivo la detección de interrupciones
 	BSF INTCON,RBIE
 	BSF INTCON,GIE 
-	RETURN	
+	RETURN
+
+;RUTINA USADA POR LA INTERRUPCION PARA RECIBIR UN MENSAJE Y CONTESTARLO------------
+RECIBIRYCONTESTAR
+	MOVF RCREG,0	;LEO EL DATO DESDE PC
+;	MOVWF TEMP
+;	INCF TEMP,1		;INCREMENTO EN 1 Y GURADO EN TEMP
+;	MOVF TEMP,0
+
+;OBTENGO EL NIVEL DE LUZ
+	;Envio la luz
+	MOVF LDR_CURRENT_LEVEL,0
+	MOVWF temp_serial
+	BSF temp_serial,4
+	BSF temp_serial,5
+	MOVF temp_serial
+	CALL ENVIAR		;MANDA LO QUE HAY EN W
+	
+	;Envio el sonido
+	MOVF LDR_CURRENT_LEVEL,0
+	MOVWF temp_serial
+	BSF temp_serial,4
+	BSF temp_serial,5
+	MOVF temp_serial
+	CALL ENVIAR
+
+	RETURN
+
+ENVIAR
+	MOVWF TXREG		;MANDO DATO
+	RETURN		;FIN DE ENVIAR
+;----------------------------------Fin Serial	
 PLAY_PAUSE
 	;Rutina de play_pause
 	;Imprimimos uno en los leds
