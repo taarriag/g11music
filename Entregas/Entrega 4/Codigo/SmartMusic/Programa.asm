@@ -205,9 +205,11 @@ START
 ;--------------------------------------;
 ;2.5 Timer							   ; 
 ;--------------------------------------;
-	bsf		STATUS,RP1	;Banco 1
-	movlw	b'00000100'	
-	movwf	OPTION_REG	;Clock interno, prescaler para timer, prescaler = 1:32
+	bsf		STATUS,RP1		;Banco 1
+	movlw	b'11000010'	
+	movwf	OPTION_REG		;Clock interno, prescaler para timer, prescaler = 1:8
+	bsf		INTCON,TMR0IE	;Habilitamos interrupciones por timer.
+	bcf		INTCON,TMR0IF	;Por defecto no hay desbordamiento
 ;--------------------------------------;
 ;2.6 Lcd							   ;
 ;--------------------------------------;
@@ -227,8 +229,8 @@ START
 ;--------------------------------------;
 ;2.7 LOOP PRINCIPAL
 ;--------------------------------------;
+	CALL TIMER_START
 LOOP
-
 	CALL LEER_LDR
 	CALL UBICAR_LDR
 	
@@ -548,8 +550,9 @@ SND_HIGH
 
 ;Subrutina extraida directamente desde la ayudantia
 INT
-	
 	BCF INTCON,GIE	;APAGO INTERRUPCIONES
+	btfsc	INTCON,TMR0IF	;Hubo overflow en el timer?
+	call	TIMER_5CLCK	
 ;BTFSC PIR1,TMR1IF  ; Si la interrupcion es por TMR1 overflow, voy al método
 ;	CALL CONTAR
     ; Hacemos polling de cada pin del puerto B (de RB4 a RB7)
@@ -928,12 +931,14 @@ return
 ;--------------------------------------;
 TIMER_START				;Empieza a contar. Inicializa los bit de estado (Tstatus)
 	movf	Thr,f
-	btfsc	STATUS,d'2'
+	btfsc	STATUS,d'3'
 	bsf		Tstatus,d'2'
 	movf	Tmin,f
 	btfsc	STATUS,d'2'
 	bsf		Tstatus,d'1'
 	bsf		Tstatus,d'0'
+	movlw	d'5'
+	movwf	clocks		;Reseteamos el contador a 5
 	goto	TIMER_CLCK
 TIMER_HOUR
 	decfsz	Thr			;decrementamos en 1 la hora. Si es 0, se acabaron las horas.
@@ -962,16 +967,18 @@ TIMER_SEC
 	movwf	Tsec
 	goto	TIMER_MIN
 TIMER_5CLCK				;Rutina que cuenta si hubieron 5 ciclos
+	bcf		INTCON,TMR0IF
 	decfsz	clocks,f	;Si llegamos a 0, significa que paso un segundo		
 	goto	TIMER_CLCK
 	goto 	TIMER_SEC
 TIMER_CLCK
-	movwf	offsetT		;guardamos el offset en registro temporal
+	;movwf	offsetT		;guardamos el offset en registro temporal
 	movlw	d'0'		
 	movwf	offset		;reiniciamos offset
 	movlw	d'131'		;256 - 131 = 125 clocks
 	addwf	offsetT,w	;Le suma el offset (cuantos ciclos han pasado) y lo guarda en W	
 	movwf	TMR0		;Iniciamos la cuenta
+	return
 TIMER_FINISH
 		
 end
