@@ -47,10 +47,10 @@
 	Tsec		res	1			;Segundos restantes del timer
 	Tmin		res	1			;Minutos restantes del timer
 	Thr			res	1			;Horas restantes del timer
-	clocks		res 1			;Cuantos clocks han pasado (125*clocks). Se reinicia al llegar al segundo (clocks = 5).
+	clocks		res 1			;Cuantos clocks han pasado (125*32*clocks). Se reinicia al llegar al segundo (clocks = 5).
 	offset		res 1			;Numero de instrucciones ejecutadas antes de iniciar un nuevo ciclo de conteo
 	offsetT		res 1			;temporal
-==========
+	Tstatus		res 1			;Registro para almacenar el estado en que nos encontramos. b'00000ABC' A = quedan horas, B = quedan minutos, C= quedan segundos	
 	COUNT		res 1
 	;VARIABLES USADAS POR INTERRUPCION SERIAL
 	temp_serial res 1
@@ -926,32 +926,54 @@ return
 ;--------------------------------------;
 ;3.6 Timer							   ;
 ;--------------------------------------;
-TIMER_START				;Empieza a contar
+TIMER_START				;Empieza a contar. Inicializa los bit de estado (Tstatus)
+	movf	Thr,f
+	btfsc	STATUS,d'2'
+	bsf		Tstatus,d'2'
+	movf	Tmin,f
+	btfsc	STATUS,d'2'
+	bsf		Tstatus,d'1'
+	bsf		Tstatus,d'0'
+	goto	TIMER_CLCK
 TIMER_HOUR
+	decfsz	Thr			;decrementamos en 1 la hora. Si es 0, se acabaron las horas.
+	goto	TIMER_CLCK
+	bcf		Tstatus,d'2'
+	goto	TIMER_CLCK
 TIMER_MIN
-	movlw	d' '		;en esta rutina usamos 6 ciclos
-	movwf	offset,f
+	decfsz	Tmin		;decrementamos en 1 los minutos. Si es 0, paso una hora
+	goto	TIMER_CLCK
+	btfss	Tstatus,d'2';Si quedan horas, vamos a TIMER_HOUR. Si no, se acabaron los minutos
+	goto	TIMER_MIN1
+	movlw	d'59'
+	movwf	Tmin
+	goto	TIMER_HOUR
+TIMER_MIN1
+	bcf		Tstatus,d'1'
+	goto	TIMER_CLCK
 TIMER_SEC
-	movlw	d'6'		;en esta rutina usamos 6 ciclos
-	addwf	offset,f
 	movlw	d'5'
 	movwf	clocks		;Reseteamos el contador a 5
 	decfsz	Tsec,f		;Decrementamos en 1. Si es 0, paso un minuto
-	goto	TIMER_MIN	
+	goto	TIMER_CLCK
+	btfss	Tstatus,d'1';Si quedan minutos, vamos a TIMER_MIN. Si no, se acabo el tiempo
+	goto	TIMER_FINISH
+	movlw	d'59'
+	movwf	Tsec
+	goto	TIMER_MIN
 TIMER_5CLCK				;Rutina que cuenta si hubieron 5 ciclos
-	movlw	d'4'		;En esta rutina usamos 4 ciclos
-	addwf	offset,f
 	decfsz	clocks,f	;Si llegamos a 0, significa que paso un segundo		
-	goto	TIMER_SEC
+	goto	TIMER_CLCK
+	goto 	TIMER_SEC
 TIMER_CLCK
-	movlw	d'8'		;En esta subrutina usamos 8 ciclos
-	addwf	offset,w
 	movwf	offsetT		;guardamos el offset en registro temporal
 	movlw	d'0'		
-	movwf	offset,f	;reiniciamos offset
+	movwf	offset		;reiniciamos offset
 	movlw	d'131'		;256 - 131 = 125 clocks
 	addwf	offsetT,w	;Le suma el offset (cuantos ciclos han pasado) y lo guarda en W	
-	movwf	TMR0		;Iniciamos la cuenta	
+	movwf	TMR0		;Iniciamos la cuenta
+TIMER_FINISH
+		
 end
 
 ;-------------------------------------------------------;
