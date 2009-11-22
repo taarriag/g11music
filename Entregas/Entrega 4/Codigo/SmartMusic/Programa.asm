@@ -230,6 +230,8 @@ START
 	movwf COUNT
 	movwf serial_overflow_1
 	movwf serial_overflow_2
+	movlw b'00001011'
+	movwf prev_serial
 
 ;--------------------------------------;
 ;2.7 LOOP PRINCIPAL
@@ -628,22 +630,6 @@ RECIBIRYCONTESTAR
 	RETURN
 
 ENVIAR
-	XORWF prev_serial,1
-	BTFSC STATUS,Z
-	GOTO igual
-	MOVLW b'11111111'
-	MOVWF serial_overflow_1
-	MOVWF serial_overflow_2
-	RETURN
-igual
-	MOVWF prev_serial
-	DECF serial_overflow_1,1
-	BTFSC STATUS,C
-	GOTO igual2
-	RETURN
-igual2
-	DECF serial_overflow_2,1
-	BTFSC STATUS,C
 	MOVWF TXREG		;MANDO DATO
 	RETURN		;FIN DE ENVIAR
 	
