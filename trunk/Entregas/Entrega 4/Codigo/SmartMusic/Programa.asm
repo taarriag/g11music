@@ -3,7 +3,7 @@
 ;-------------------;
 	list p=16F877A         ; Le decimos al compilador que pic usamos
 	include <P16F877A.inc> ; Definicion de parametros y constantes.
-	EXTERN LCDInit, LCDBusy, i_write, d_write, temp_wr
+	EXTERN LCDInit, LCDBusy, LCDLine_1, LCDLine_2, i_write, d_write, temp_wr
 ;-------------------------------------------;
 ; 1.1 Definicion de Registros y variables	;
 ;-------------------------------------------;
@@ -54,6 +54,9 @@
 	COUNT		res 1
 	;VARIABLES USADAS POR INTERRUPCION SERIAL
 	temp_serial res 1
+	prev_serial res 1
+	serial_overflow_1 res 1
+	serial_overflow_2 res 1
 ;--------------------------------------;
 ; 2 Configuracion                      ;
 ;--------------------------------------;
@@ -225,6 +228,8 @@ START
 
 	movlw b'11111111'
 	movwf COUNT
+	movwf serial_overflow_1
+	movwf serial_overflow_2
 
 ;--------------------------------------;
 ;2.7 LOOP PRINCIPAL
@@ -280,6 +285,11 @@ Write_LCD
 	call	i_write
 	call LCDBusy
 	call LCDBusy
+	call LCDBusy
+
+	call LCDLine_1
+	call LCDBusy
+	call LCDBusy
 
 	movlw 'L'
 	movwf temp_wr
@@ -302,11 +312,15 @@ Write_LCD
 	bsf temp_wr,5
 	call d_write
 	call LCDBusy
-
-	movlw ' '
-	movwf temp_wr
-	call d_write
 	call LCDBusy
+
+	call LCDLine_2
+	call LCDBusy
+	call LCDBusy
+;	movlw ' '
+;	movwf temp_wr
+;	call d_write
+;	call LCDBusy
 
 	movlw 'S'
 	movwf temp_wr
@@ -328,6 +342,7 @@ Write_LCD
 	bsf temp_wr,4
 	bsf temp_wr,5
 	call d_write
+	call LCDBusy
 	call LCDBusy
 
 	movlw b'11111111'
@@ -447,7 +462,7 @@ LDR_HIGH
 ;--------------------------------------;	
 
 LEER_SND
-	MOVLW	B'01000001'	;Apuntamos al CH1 y encendemos el modulo conversor 
+	MOVLW	B'01010001'	;Apuntamos al CH1 y encendemos el modulo conversor 
 	MOVWF	ADCON0 
 	
 	NOP
@@ -613,8 +628,25 @@ RECIBIRYCONTESTAR
 	RETURN
 
 ENVIAR
+	XORWF prev_serial,1
+	BTFSC STATUS,Z
+	GOTO igual
+	MOVLW b'11111111'
+	MOVWF serial_overflow_1
+	MOVWF serial_overflow_2
+	RETURN
+igual
+	MOVWF prev_serial
+	DECF serial_overflow_1,1
+	BTFSC STATUS,C
+	GOTO igual2
+	RETURN
+igual2
+	DECF serial_overflow_2,1
+	BTFSC STATUS,C
 	MOVWF TXREG		;MANDO DATO
 	RETURN		;FIN DE ENVIAR
+	
 ;----------------------------------Fin Serial	
 PLAY_PAUSE
 	;Rutina de play_pause
