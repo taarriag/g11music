@@ -43,8 +43,15 @@
 	del0		res 1
 	del1		res 1
 	del2		res 1
+	;3.6
+	Tsec		res	1			;Segundos restantes del timer
+	Tmin		res	1			;Minutos restantes del timer
+	Thr			res	1			;Horas restantes del timer
+	clocks		res 1			;Cuantos clocks han pasado (125*clocks). Se reinicia al llegar al segundo (clocks = 5).
+	offset		res 1			;Numero de instrucciones ejecutadas antes de iniciar un nuevo ciclo de conteo
+	offsetT		res 1			;temporal
+==========
 	COUNT		res 1
-
 	;VARIABLES USADAS POR INTERRUPCION SERIAL
 	temp_serial res 1
 ;--------------------------------------;
@@ -196,9 +203,15 @@ START
 	MOVLW D'50'
     MOVWF SND_LEVEL2
 ;--------------------------------------;
+;2.5 Timer							   ; 
+;--------------------------------------;
+	bsf		STATUS,RP1	;Banco 1
+	movlw	b'00000100'	
+	movwf	OPTION_REG	;Clock interno, prescaler para timer, prescaler = 1:32
+;--------------------------------------;
 ;2.6 Lcd							   ;
 ;--------------------------------------;
-	BCF	STATUS,RP1
+	bcf	STATUS,RP1
 	bcf	STATUS,RP0	;Vamos al banco 0
 	
 	call LCDInit
@@ -535,6 +548,7 @@ SND_HIGH
 
 ;Subrutina extraida directamente desde la ayudantia
 INT
+	
 	BCF INTCON,GIE	;APAGO INTERRUPCIONES
 ;BTFSC PIR1,TMR1IF  ; Si la interrupcion es por TMR1 overflow, voy al método
 ;	CALL CONTAR
@@ -909,6 +923,35 @@ SUMA_10
 	movf    BIN,w
 	iorwf   BCDL,f      
 return
+;--------------------------------------;
+;3.6 Timer							   ;
+;--------------------------------------;
+TIMER_START				;Empieza a contar
+TIMER_HOUR
+TIMER_MIN
+	movlw	d' '		;en esta rutina usamos 6 ciclos
+	movwf	offset,f
+TIMER_SEC
+	movlw	d'6'		;en esta rutina usamos 6 ciclos
+	addwf	offset,f
+	movlw	d'5'
+	movwf	clocks		;Reseteamos el contador a 5
+	decfsz	Tsec,f		;Decrementamos en 1. Si es 0, paso un minuto
+	goto	TIMER_MIN	
+TIMER_5CLCK				;Rutina que cuenta si hubieron 5 ciclos
+	movlw	d'4'		;En esta rutina usamos 4 ciclos
+	addwf	offset,f
+	decfsz	clocks,f	;Si llegamos a 0, significa que paso un segundo		
+	goto	TIMER_SEC
+TIMER_CLCK
+	movlw	d'8'		;En esta subrutina usamos 8 ciclos
+	addwf	offset,w
+	movwf	offsetT		;guardamos el offset en registro temporal
+	movlw	d'0'		
+	movwf	offset,f	;reiniciamos offset
+	movlw	d'131'		;256 - 131 = 125 clocks
+	addwf	offsetT,w	;Le suma el offset (cuantos ciclos han pasado) y lo guarda en W	
+	movwf	TMR0		;Iniciamos la cuenta	
 end
 
 ;-------------------------------------------------------;
