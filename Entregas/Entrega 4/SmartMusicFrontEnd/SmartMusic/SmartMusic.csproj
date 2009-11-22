@@ -46,9 +46,9 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="WinampFrontEndLib, Version=1.0.2168.40014, Culture=neutral">
+    <Reference Include="WinampFrontEndLib, Version=1.0.2168.38500, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\WinampFrontEndSolution\WinampFrontEndLib\bin\Release\WinampFrontEndLib.dll</HintPath>
+      <HintPath>lib\WinampFrontEndLib.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
