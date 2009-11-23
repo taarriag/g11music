@@ -14,15 +14,28 @@ namespace SmartMusic
     {
         private int ldr_level;
         private int snd_level;
+        private int ldr_count;
+        private int snd_count;
+        private int ldr_last;
+        private int snd_last;
         Process winamp;
         private string currentSong;
+        private ColaCircular lightQueue;
+        private ColaCircular soundQueue;
+
         public event TrackChangedEventHandler TrackChanged;
 
         public WinampConnection()
         {
             this.snd_level = 1;
             this.ldr_level = 1;
+            this.ldr_count = 0;
+            this.snd_count = 0;
+            this.ldr_last = 1;
+            this.snd_last = 1;
             winamp = new Process();
+            this.lightQueue = new ColaCircular(200);
+            this.soundQueue = new ColaCircular(200);
         }
 
         public string GetCurrentTrack()
@@ -44,16 +57,44 @@ namespace SmartMusic
             if (max <= 33 && max>=11)
             {
                 char[] levels = text.ToCharArray();
-                int new_ldr_level = (int)max/10;
-                int new_snd_level = (int)max%10;
-                if (new_ldr_level != ldr_level || new_snd_level != snd_level)
+                int new_ldr_level = this.lightQueue.agregar(max/10);
+                int new_snd_level = this.soundQueue.agregar(max%10);
+
+                if (new_ldr_level == ldr_level)
+                    ldr_count++;
+
+                else
                 {
-                    ChangePlaylist(new_ldr_level, new_snd_level);
+                    ldr_count = 0;
                     ldr_level = new_ldr_level;
+                }
+
+                if (new_snd_level == snd_level)
+                    snd_count++;
+
+                else
+                {
+                    snd_count = 0;
                     snd_level = new_snd_level;
                 }
-            }
-            
+
+                if ((ldr_count == 20 && ldr_level != ldr_last) || (snd_count == 20 && snd_level != snd_last))
+                {
+                    if (ldr_count == 20 && ldr_level != ldr_last)
+                    {
+                        ldr_last = ldr_level;
+                        ldr_count = 0;
+                    }
+
+                    if (snd_count == 20 && snd_level != snd_last)
+                    {
+                        snd_last = snd_level;
+                        snd_count = 0;
+                    }
+
+                    ChangePlaylist(ldr_level, snd_level);
+                }
+            }            
         }
 
         /// <summary>
