@@ -27,15 +27,6 @@
 	countb		res 1			;used in delay routine
 	tmp1		res 1			;temporary storage
 	tmp2		res 1
-	templcd		res 1			;temp store for 4 bit mode
-	templcd2	res 1
-	LCD_PORT	Equ	PORTD
-	LCD_TRIS	Equ	TRISD
-	LCD_CONFIG_PORT Equ PORTC
-	LCD_CONFIG_TRIS Equ TRISC
-	LCD_RS		Equ	0x00			;LCD handshake lines
-	;LCD_RW		Equ	0x04
-	LCD_E		Equ	0x01		;
 	;3.5
 	BIN			res	1			; Numero que queremos convertir de binario a BCD
 	BCDH		res	1			; Bcd high
@@ -60,6 +51,8 @@
 
 	;TESTS SERIAL
 	test_serial	res 1
+	caracter_pc res 1
+
 
 	;SETEO DE MINUTOS
 	COUNTDOWN res 1				;Cantidad de minutos a transcurrir para apagar el equipo (configurados).
@@ -71,12 +64,12 @@
 	one	res 1
 	five res 1
 	nine res 1
+
+
 ;--------------------------------------;
 ; 2 Configuracion                      ;
 ;--------------------------------------;
 	ORG	H'00'
-	;movlw	0x07
-	;movwf	CMCON
 	GOTO	START		; Vamos al inicio del programa
 
 	
@@ -88,16 +81,6 @@
 
 
 START	
-
-;-------------------------
-;bcf                 STATUS,0       ;make sure we are in  0
-;clrf                 01h               ;address of the other timer  TMR0
-;bsf                 STATUS,0       ;switch to bank 1
-;clrwdt                                 ;reset the WDT and prescaler
-;movlw             B'1111'            ;Select the new prescaler value and assign
-;movwf            OPTION_REG           ;it to WDT
-;bcf                 STATUS,0       ;come back to bank 0
-;-----------------------------------
 	movlw d'1'
 	movwf one
 	movlw d'5'
@@ -113,6 +96,9 @@ START
 ;--------------------------------------;
 ; 2.1 Puertos                          ;
 ;--------------------------------------;
+	;BCF H'2007',2
+
+
 	BCF 	STATUS,RP1 	; Vamos al banco 1
 	BSF		STATUS,RP0	 
 	
@@ -153,19 +139,13 @@ START
 ;--------------------------------------;
 	MOVLW 	B'11011000' ;Activamos Interrupciones globales y perifericas, interrupciones en RB0/INT e
 	MOVWF 	INTCON		;interrupciones por cambios en Puerto B.					
-						;NOTA: REVISAR SI DEBEMOS ACTIVAR INTERRUPCIÓN DE TIMER0
 						
-	
-	;NOTA: ESTA PARTE FUE COPIADA DIRECTAMENTE DEL CODIGO DE LA AYUDANTIA. REVISAR----------
-
 	BCF 	STATUS,RP1 	;Vamos al banco1
 	BSF 	STATUS,RP0	
 	
-	;MOVLW B'00000001'	; Activo la interrupcion Timer1 Overflow
-	MOVLW B'00100001' 
+	MOVLW B'00100000' 
 
 	MOVWF PIE1			; Aqui se puede usar la interr. del USART, etc.
-;	bsf PIE1,TMR1IE	
     
 ;CONFIGURACION CONEXION SERIAL
 	;CONFIGURACION TX y RX
@@ -182,22 +162,14 @@ START
 	BCF STATUS,RP1	; BANCO 0
 	
 	;CONFIGURACION TIMER 1
-	CLRF TMR1L
-	CLRF TMR1H	; Borro registros TMR1
-	MOVLW B'00000000'  ; Uso de clock interno, prescaler 1:4, Timer1 OFF
-	; MOVLW B'00000001'
-	MOVWF T1CON	
-	
-	;--------------------------------------------------------------------------------------
-	
-	;BCF STATUS,RP0	; Vamos al banco 0
-	;movlw	b'11001000'
-	;movwf	INTCON		; Permisos de interrupcion: Global, Perifericos y RB4-RB7.
-	;movlw	b'01000000'
-	;movwf	PIE1		; Permiso de interrupcion para conversion A/D
-	;TODO: Configuracion interrupciones puerto C, serial
+	MOVLW 0XFF
+	MOVWF TMR1L
+	MOVLW 0XFF
+	MOVWF TMR1H	; Borro registros TMR1
 
-	
+	MOVLW B'01100000'
+	MOVWF T1CON	
+		
 ;--------------------------------------;
 ;2.4 ADC 
 ;--------------------------------------;
@@ -214,6 +186,7 @@ START
 	;Configuramos el ADCON0
 	MOVLW	B'01000000' ;Fosc/8,CH0,ADC = OFF
 	MOVWF	ADCON0
+
 ; Seteamos los niveles de corte para el potenciómetro de selección de leds
 
     MOVLW D'30'
@@ -221,6 +194,7 @@ START
 
 	MOVLW D'70'
     MOVWF LDR_LEVEL2
+
 ; Seteamos los niveles de corte para el potenciómetro de selección de leds
 
     MOVLW D'20'
@@ -228,21 +202,6 @@ START
 
 	MOVLW D'50'
     MOVWF SND_LEVEL2
-;--------------------------------------;
-;2.5 Timer							   ; 
-;--------------------------------------;
-	bsf		STATUS,RP1		;Banco 1
-	movlw	b'11000010'	
-	movwf	OPTION_REG		;Clock interno, prescaler para timer, prescaler = 1:8
-	bsf		INTCON,TMR0IE	;Habilitamos interrupciones por timer.
-	bcf		INTCON,TMR0IF	;Por defecto no hay desbordamiento
-
-	movlw b'00110001'
-	movwf T1CON
-	bsf PIE1,TMR1IE
-	bcf PIE1,TMR1IF
-
-
 
 ;--------------------------------------;
 ;2.6 Lcd							   ;
@@ -258,9 +217,6 @@ START
 	call LCDInit
 	call LCDBusy
 
-;	CALL Delay1s 	;wait for LCD to settle
-;	CALL LCD_Init	;Inicializamos el LCD
-	;CALL LCD_Inter1	;Interfaz del LCD	
 
 	movlw b'11111111'
 	movwf COUNT
@@ -275,7 +231,7 @@ START
 ;--------------------------------------;
 ;2.7 LOOP PRINCIPAL
 ;--------------------------------------;
-	CALL TIMER_START
+
 LOOP
 	;ESPERO A ALGUNA INTERRUPCION DE RX
 	MOVLW B'00110000'
@@ -300,6 +256,7 @@ LOOP
 	addwf temp_serial,0
 	
 	CALL ENVIAR
+	
 
 	GOTO LOOP
 	
@@ -345,12 +302,121 @@ Write_LCD
     call LCDBusy
     call LCDBusy
 
-	movf test_serial,0
+	movf b'01111111'
 	movwf temp_wr
 	call d_write
 	call LCDBusy
     call LCDBusy
     call LCDBusy
+
+	movlw b'01111111'
+	movwf temp_wr
+	call d_write
+	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+	movlw b'01111111'
+	movwf temp_wr
+	call d_write
+	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+
+
+	movlw 'S'
+	movwf temp_wr
+	call d_write
+	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+	movlw 'm'
+	movwf temp_wr
+	call d_write
+	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+	movlw 'a'
+	movwf temp_wr
+	call d_write
+	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+	movlw 'r'
+	movwf temp_wr
+	call d_write
+	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+	movlw 't'
+	movwf temp_wr
+	call d_write
+	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+	movlw 'M'
+	movwf temp_wr
+	call d_write
+	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+	movlw 'u'
+	movwf temp_wr
+	call d_write
+	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+	movlw 's'
+	movwf temp_wr
+	call d_write
+	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+	movlw 'i'
+	movwf temp_wr
+	call d_write
+	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+	movlw 'c'
+	movwf temp_wr
+	call d_write
+	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+	movlw b'01111110'
+	movwf temp_wr
+	call d_write
+	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+	movlw b'01111110'
+	movwf temp_wr
+	call d_write
+	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+	movlw b'01111110'
+	movwf temp_wr
+	call d_write
+	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+
 
 	call LCDLine_2
 	call LCDBusy
@@ -394,6 +460,13 @@ Write_LCD
     call LCDBusy
     call LCDBusy
 
+	movlw ' '
+	movwf temp_wr
+	call d_write
+	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
 	movlw 'S'
 	movwf temp_wr
 	call d_write
@@ -419,6 +492,13 @@ Write_LCD
 	movwf temp_wr
 	bsf temp_wr,4
 	bsf temp_wr,5
+	call d_write
+	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+	movlw ' '
+	movwf temp_wr
 	call d_write
 	call LCDBusy
     call LCDBusy
@@ -684,8 +764,6 @@ SND_HIGH
 ;Subrutina extraida directamente desde la ayudantia
 INT
 	BCF INTCON,GIE	;APAGO INTERRUPCIONES
-	btfsc	INTCON,TMR0IF	;Hubo overflow en el timer?
-	call	TIMER_5CLCK	
 	
 	BTFSC PIR1,TMR1IF  ; Si la interrupcion es por TMR1 overflow, voy al método
 	GOTO DECREMENTAR_COUNTDOWN_SEGUNDOS
@@ -723,49 +801,16 @@ FINALLY
 	BCF	INTCON,RBIF	
 	
 	;reactivo la detección de interrupciones
-	BSF INTCON,RBIE
 	BSF INTCON,GIE 
 	RETURN
 
 ;RUTINA USADA POR LA INTERRUPCION PARA RECIBIR UN MENSAJE Y CONTESTARLO------------
 RECIBIRYCONTESTAR
-	;MOVF RCREG,0	;LEO EL DATO DESDE PC
-	movlw 'a'
-	movwf test_serial
+	MOVF RCREG,0	;LEO EL DATO DESDE PC
+	MOVWF caracter_pc	
 
-	call LCDLine_1
-	call LCDBusy
-	call LCDBusy
-	call LCDBusy
-
-	movwf temp_wr
-	call d_write
-	call LCDBusy
-	call LCDBusy
-	call LCDBusy
 	GOTO FINALLY
 
-;	MOVWF TEMP
-;	INCF TEMP,1		;INCREMENTO EN 1 Y GURADO EN TEMP
-;	MOVF TEMP,0
-
-;OBTENGO EL NIVEL DE LUZ
-
-	;Envio la luz
-	;MOVF LDR_CURRENT_LEVEL,0
-	;MOVWF temp_serial
-	;BSF temp_serial,4
-	;BSF temp_serial,5
-	;MOVF temp_serial
-	;CALL ENVIAR		;MANDA LO QUE HAY EN W
-	
-	;Envio el sonido
-	;MOVF LDR_CURRENT_LEVEL,0
-	;MOVWF temp_serial
-	;BSF temp_serial,4
-	;BSF temp_serial,5
-	;MOVF temp_serial
-	;CALL ENVIAR
 
 ENVIAR
 	MOVWF TXREG		;MANDO DATO
@@ -819,6 +864,7 @@ TIMER_LEVEL0
 	MOVF COUNTDOWN,0
 	BTFSS STATUS,Z
 	GOTO TIMER_LEVEL1
+	banksel COUNTDOWN
 	MOVLW d'1'
 	MOVWF COUNTDOWN
 	MOVWF COUNTDOWN_ACTUAL
@@ -832,6 +878,7 @@ TIMER_LEVEL1
 	SUBWF one,0
 	BTFSS STATUS,Z
 	GOTO TIMER_LEVEL5
+	banksel COUNTDOWN
 	MOVLW d'5'
 	MOVWF COUNTDOWN
 	MOVWF COUNTDOWN_ACTUAL
@@ -845,6 +892,7 @@ TIMER_LEVEL5
 	SUBWF five,0
 	BTFSS STATUS,Z
 	GOTO TIMER_LEVEL9
+	banksel COUNTDOWN
 	MOVLW d'9'
 	MOVWF COUNTDOWN
 	MOVWF COUNTDOWN_ACTUAL
@@ -854,6 +902,7 @@ TIMER_LEVEL5
 	GOTO FINALLY
 
 TIMER_LEVEL9
+	banksel COUNTDOWN
 	MOVF COUNTDOWN,0
 	SUBWF nine,0
 	MOVLW d'0'
@@ -874,7 +923,7 @@ DECREMENTAR_COUNTDOWN_SEGUNDOS
 	MOVF COUNTDOWN_SEGUNDOS,0
 	BTFSC STATUS,Z
 	GOTO DECREMENTAR_COUNTDOWN_MINUTOS
-	DECF COUNTDOWN_SEGUNDOS,0
+	DECF COUNTDOWN_SEGUNDOS,f
 	GOTO FINALLY
 
 DECREMENTAR_COUNTDOWN_MINUTOS
@@ -883,7 +932,7 @@ DECREMENTAR_COUNTDOWN_MINUTOS
 	MOVF COUNTDOWN_MINUTOS,0
 	BTFSC STATUS,Z
 	GOTO DECREMENTAR_COUNTDOWN_ACTUAL
-	DECF COUNTDOWN_MINUTOS,0
+	DECF COUNTDOWN_MINUTOS,f
 	GOTO FINALLY
 
 DECREMENTAR_COUNTDOWN_ACTUAL
@@ -892,149 +941,17 @@ DECREMENTAR_COUNTDOWN_ACTUAL
 	MOVF COUNTDOWN_ACTUAL
 	BTFSC STATUS,Z
 	GOTO Stop
-	DECF COUNTDOWN_ACTUAL,0
+	DECF COUNTDOWN_ACTUAL,f
 	GOTO FINALLY
 
 
 		
 ;--------------------------------------;
-;3.4 Rutinas de LCD					   ;
+;3.4 Rutinas de Delay;
 ;--------------------------------------;	
-LCD_Init
-		movlw	b'00111000'
-		movwf	LCD_PORT
-		call Pulse_e
-		call Delay1s
-
-		movlw	b'00111000'
-		movwf	LCD_PORT
-		call Pulse_e
-		call Delay1s
-
-		movlw	b'00111000'
-		movwf	LCD_PORT
-		call Pulse_e
-		call Delay1s
-
-		movlw	b'00001110'
-		movwf	LCD_PORT
-		call Pulse_e
-		call Delay1s
-
-		movlw	b'00000110'
-		movwf	LCD_PORT
-		call Pulse_e
-		call Delay1s
-
-		bsf	LCD_CONFIG_PORT, LCD_RS
-		movlw	b'01001000'
-		movwf	LCD_PORT
-		call Pulse_e
-		call Delay1s
-
-		
-		movlw	b'11111111'
-		movwf	LCD_PORT
-;		bsf	LCD_CONFIG_PORT, LCD_RW
-		bcf	LCD_CONFIG_PORT, LCD_RS
-		bsf	LCD_CONFIG_PORT, LCD_E
-		goto Stop
-
-		;movlw	b'00111000'			;Set 4 bit mode
-		;call	LCD_Cmd
-
-		;movlw	0x28			;Set display shift
-		;call	LCD_Cmd
-
-		;movlw	0x06			;Set display character mode
-		;call	LCD_Cmd
-
-		;movlw	0x0e			;Set display on/off and cursor command
-		;call	LCD_Cmd
-
-		;movlw	0x06			
-		;call	LCD_Cmd
-
-;goto Stop
-
-		;call	LCD_Clr			;clear display
-
-		retlw	0x00
-
-LCD_Cmd						;Rutina para configurar aspectos del LCD. Se ingresa en W el valor adecuado
-	movwf	templcd
-	swapf	templcd,	w	;send upper nibble
-	andlw	0x0f			;clear upper 4 bits of W
-	movwf	LCD_PORT
-	bcf	LCD_PORT, LCD_RS	;RS line to 0
-	call	Pulse_e			;Pulse the E line high
-
-	movf	templcd,	w	;send lower nibble
-	andlw	0x0f			;clear upper 4 bits of W
-	movwf	LCD_PORT
-	bcf	LCD_PORT, LCD_RS	;RS line to 0
-	call	Pulse_e			;Pulse the E line high
-	call 	Delay5
-	retlw	0x00
-LCD_CharD
-	addlw	0x30
-LCD_Char	
-	movwf	templcd
-	swapf	templcd,	w	;send upper nibble
-	andlw	0x0f			;clear upper 4 bits of W
-	movwf	LCD_PORT
-	bsf	LCD_PORT, LCD_RS	;RS line to 1
-	call	Pulse_e			;Pulse the E line high
-
-	movf	templcd,	w	;send lower nibble
-	andlw	0x0f			;clear upper 4 bits of W
-	movwf	LCD_PORT
-	bsf	LCD_PORT, LCD_RS	;RS line to 1
-	call	Pulse_e			;Pulse the E line high
-	call 	Delay5
-	retlw	0x00
-LCD_Line1						;Para moverse a fila 1, coulmna 1
-	movlw	0x80			;move to 1st row, first column
-	call	LCD_Cmd
-	retlw	0x00
-LCD_Line2						;Fila 2, coulmna 1
-	movlw	0xc0			;move to 2nd row, first column
-	call	LCD_Cmd
-	retlw	0x00
-LCD_Line1W	
-	addlw	0x80			;move to 1st row, column W
-	call	LCD_Cmd
-	retlw	0x00
-LCD_Line2W	
-	addlw	0xc0			;move to 2nd row, column W
-	call	LCD_Cmd
-	retlw	0x00
-LCD_CurOn
-	movlw	0x0d			;Set display on/off and cursor command
-	call	LCD_Cmd
-	retlw	0x00
-LCD_CurOff	
-	movlw	0x0c			;Set display on/off and cursor command
-	call	LCD_Cmd
-	retlw	0x00
-LCD_Clr		
-	movlw	0x01			;Clear display
-	call	LCD_Cmd
-	retlw	0x00
-LCD_HEX		
-	movwf	tmp1
-	swapf	tmp1,	w
-	andlw	0x0f
-	call	HEX_Table
-	call	LCD_Char
-	movf	tmp1, w
-	andlw	0x0f
-	call	HEX_Table
-	call	LCD_Char
-	retlw	0x00
 
 Delay1s
-			;9999995 cycles
+	;9999995 cycles
 	movlw	0x5A
 	movwf	del0
 	movlw	0xCD
@@ -1083,21 +1000,6 @@ Delay_0
 	decfsz	count1	,f
 	goto	d1
 	retlw	0x00
-Pulse_e		
-
-		bcf	LCD_CONFIG_PORT, LCD_E
-
-		call Delay100
-
-		bsf	LCD_CONFIG_PORT, LCD_E
-		
-		call Delay100
-
-		bcf	LCD_CONFIG_PORT, LCD_E
-
-		call Delay100
-
-		retlw	0x00
 
 HEX_Table  	
 	ADDWF   PCL , f
@@ -1119,33 +1021,6 @@ HEX_Table
    	RETLW   0x46
 ; Hasta aca es el codigo extraido de la pagina
 
-LCD_Num					;Recibe un numero en BCD (Mediante W) y lo imprime
-	movwf	tmp1		;Guardamos el numero en tmp1
-	bsf		tmp1,d'4'	
-	bsf		tmp1,d'5'	;Seteamos los bits para el caracter
-	movf	tmp1,0		;Movemos a W lo que queremos imprimir
-	call	LCD_Char
-	return	
-LCD_Inter1				;Escribre la interfaz del LCD
-	call LCD_Line1
-	movlw	'L'
-	call LCD_Char
-	movlw	'u'
-	call LCD_Char
-	movlw	'z'
-	call LCD_Char
-	movlw	':'
-	call LCD_Char
-	call LCD_Line2
-	movlw	'S'
-	call LCD_Char
-	movlw	'n'
-	call LCD_Char
-	movlw	'd'
-	call LCD_Char
-	movlw	':'
-	call LCD_Char	
-	return
 ;--------------------------------------;
 ;3.5 Conversor byte a BCD			   ;
 ;--------------------------------------;
