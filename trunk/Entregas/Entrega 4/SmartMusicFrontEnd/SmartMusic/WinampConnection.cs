@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -57,7 +57,23 @@ namespace SmartMusic
         }
 
         /// <summary>
-        /// Cambia la lista a reproducir en funcion del
+        /// Obtiene una accion a partir de un string 
+        /// </summary>
+        /// <param name="text"></param>
+        public void GetAction(string text)
+        {
+            int max = Int32.Parse(text);
+            if (max >= 66 && max <= 88)
+            {
+                if (max == 66) DoAction(1);
+                else if (max == 77) DoAction(2);
+                else if (max == 88) DoAction(3);
+            }  
+        }
+
+
+        /// <summary>
+        /// Cambia la lista a reproducir en función del
         /// nivel de luz y sonido entrante
         /// </summary>
         /// <param name="new_ldr_level">Nuevo nivel de luz</param>
@@ -99,7 +115,7 @@ namespace SmartMusic
             }
         }
 
-        public void ActualizarTrack()
+        public void ActualizarTrack(object sender, EventArgs e)
         {
             if (!WinampLib.GetCurrentSongTitle().Equals(currentSong, StringComparison.CurrentCultureIgnoreCase))
             {
