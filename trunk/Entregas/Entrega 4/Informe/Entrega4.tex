@@ -449,6 +449,30 @@ Para el detalle de conexión de todos sus pines, ver cuadro 1.
 %poner el regulador del voltaje, algún pin no conectado al pic, etc, muy corto, una línea\\
 
 \newpage
+\section{Limitaciones y problemas encontrados}
+A continuación se presentarán los problemas que se acontecieron en la realización del proyecto. 
+\begin{itemize}
+	\item En primer lugar, observamos problemas en la comunicación desde el PC y al PIC. Se observa que es muy lento enviar información desde el PC a PIC ya que la interrupción que se genera interrumpe el flujo general del programa. De esta forma, se nos hizo imposible enviar la información del nombre completo de la canción desde el PC al PIC para que la muestre en la pantalla.
+	\item El segundo problema que surgió se relaciona con la configuración del timer TMR1. Con respecto a este módulo, surgieron dos problemas que no logramos resolver:
+	
+\begin{enumerate}
+	\item Cuando el timer TMR1 está en enable, la pantalla LCD se paraliza. Vemos que una causa probable de este error es que la interrupción de timer detiene el flujo normal del programa ejecutando la subrutina de la interrupción. Ahora, si es que se estaba ejecutando una instrucción de la pantalla LCD mientras ocurre una interrupción, puede causar un error en el LCD. Para evitar esto, mientra se ejecutan las instrucciones de la pantalla, se desactivan todas las instrucciones haciendo clear del registro INTCON$<$7$>$. A pesar de lo anterior, de todas formas falla el funcionamiento del LCD cuando se activa el timer.
+	\item Se observó al simular el código que al utilizar el timer TMR1, cada vez que transcurrió cierto tiempo, se interrumpe la ejecución actual del programa comenzando nuevamente su ejecución. Creemos que el problema se podría deber al Watchdog Timer, el cual podría estar reiniciando el programa cuando este está en un loop muy largo. Por este motivo desactivamos este timer, pero no obtuvimos resultados favorables.  
+\end{enumerate}
+
+\item Un tercer problema encontrado se relaciona con ciertas fallas del hardware. En primer lugar, vimos que los puertos A0 y D4 no funcionan correctamente. Para solucionarlo simplemente no los utilizamos. Además observamos que el sensor de sonido falló y dejó de medir el sonido del ambiente. Para solucionar esto y probar el funcionamiento de nuestro dispositivo decidimos utilizar un potenciómetro en reemplazo del sensor con la idea de reemplazarlo por un sensor funcional en un futuro cercano. Como el dispositivo funciona con el potenciómetro, vemos que la falla es efectivamente del sensor.
+\end{itemize}
+
+De todas formas, es importante recalcar que a pesar de los errores anteriores nuestro dispositivo cumple su principal funcionalidad que corresponde a controlar la reproducción de la música en un computador a partir del nivel de luz y de sonido que están presentes en el ambiente.\\
+
+\begin{itemize}
+	\item Para establecer el tiempo en el que el dispositivo detendrá su reproducción se utiliza únicamente un botón, existiendo una flexibilidad reducida para cambiar el tiempo (disminuirlo por ejemplo)
+	\item Existen solamente 9 estados posibles para distintos tipos de música según los 3 niveles de sonido y de luz respectivamente.
+	
+\end{itemize}
+
+
+\newpage
 \section{Código del Microcontrolador}
 \subsection{Programa principal}
 \lstinputlisting{../Codigo/SmartMusic/Programa.asm}
@@ -473,27 +497,22 @@ El código utilizado está programado en C\#, utilizando la librería WinAmp Front 
 \subsection{SerialComm}
 \lstinputlisting{../SmartMusicFrontEnd/SmartMusic/SerialComm.cs}
 
-\subsection{Form1}
-\lstinputlisting{../SmartMusicFrontEnd/SmartMusic/Form1.cs}
-
-
-\newpage
-\section{Limitaciones y problemas encontrados}
-%pendiente
-\begin{itemize}
-	\item Para establecer el tiempo en el que el dispositivo detendrá su reproducción se utiliza únicamente un botón, existiendo una flexibilidad reducida para cambiar el tiempo (disminuirlo por ejemplo)
-	\item Existen solamente 9 estados posibles para distintos tipos de música según los 3 niveles de sonido y de luz respectivamente.
-\end{itemize}
+%\subsection{Form1}
+%\lstinputlisting{../SmartMusicFrontEnd/SmartMusic/Form1.cs}
 
 
 
-\newpage
-\section{Anexos}
-\subsection{Anexo 1: Diagrama de flujo circuito LEDs}
-\begin{figure}[h]
-	\centering
-		\includegraphics[width=0.90\textwidth]{Images/Flujoentrega2.png}
-	\caption{Diagrama de flujo LEDs}
-	\label{fig:Flujoentrega2}
-\end{figure}
+
+
+%\newpage
+%\section{Anexos}
+%\subsection{Anexo 1: Diagrama de flujo circuito LEDs}
+%\begin{figure}[h]
+%	\centering
+%		\includegraphics[width=0.90\textwidth]{Images/Flujoentrega2.png}
+%	\caption{Diagrama de flujo LEDs}
+%	\label{fig:Flujoentrega2}
+%\end{figure}
+
+
 \end{document}
