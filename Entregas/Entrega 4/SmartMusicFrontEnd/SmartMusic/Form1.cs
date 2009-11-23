@@ -12,6 +12,7 @@ namespace SmartMusic
 {
     public partial class Form1 : Form
     {
+        Timer timer = new Timer();
         private WinampConnection winampConnection;
         private SerialComm serialComm;
         
@@ -36,7 +37,8 @@ namespace SmartMusic
 
         void winampConnection_TrackChanged(string song)
         {
-            serialComm.Send(song);
+            //serialComm.Send("a");
+            //serialComm.Send(song);
         }
 
         private void InitializePorts()
@@ -53,7 +55,9 @@ namespace SmartMusic
         {
             serialComm = new SerialComm(this.portComboBox.SelectedItem.ToString());
             serialComm.IncomingInfoEvent+=new IncomingInfoEventHandler(winampConnection.GetNewLevels);
+            serialComm.IncomingInfoEvent+=new IncomingInfoEventHandler(winampConnection.GetAction);
             serialComm.Start();
+            ListenWinamp();
             //serialComm.Send('h');
         }
 
@@ -69,6 +73,18 @@ namespace SmartMusic
         private void button1_Click(object sender, EventArgs e)
         {
             winampConnection.DoAction(1);
+        }
+
+        public void ListenWinamp()
+        {
+            timer.Interval = 1 * 1000;
+            timer.Tick += new EventHandler(winampConnection.ActualizarTrack);
+            timer.Start();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            winampConnection.DoAction(3);
         }
 
 

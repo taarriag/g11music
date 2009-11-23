@@ -57,6 +57,20 @@
 	prev_serial res 1
 	serial_overflow_1 res 1
 	serial_overflow_2 res 1
+
+	;TESTS SERIAL
+	test_serial	res 1
+
+	;SETEO DE MINUTOS
+	COUNTDOWN res 1				;Cantidad de minutos a transcurrir para apagar el equipo (configurados).
+	
+	COUNTDOWN_SEGUNDOS res 1	;Cantidad de overflows restantes para disminuir la cantidad de segundos.
+	COUNTDOWN_MINUTOS res 1		;Cantidad de segundos restantes para disminuir la cantidad de minutos.
+	COUNTDOWN_ACTUAL res 1		;Cantidad de minutos restantes para apagar el equipo.
+	
+	one	res 1
+	five res 1
+	nine res 1
 ;--------------------------------------;
 ; 2 Configuracion                      ;
 ;--------------------------------------;
@@ -76,7 +90,7 @@
 START	
 
 ;-------------------------
-;bcf                 STATUS,0       ;make sure we are in bank 0
+;bcf                 STATUS,0       ;make sure we are in  0
 ;clrf                 01h               ;address of the other timer  TMR0
 ;bsf                 STATUS,0       ;switch to bank 1
 ;clrwdt                                 ;reset the WDT and prescaler
@@ -84,7 +98,17 @@ START
 ;movwf            OPTION_REG           ;it to WDT
 ;bcf                 STATUS,0       ;come back to bank 0
 ;-----------------------------------
+	movlw d'1'
+	movwf one
+	movlw d'5'
+	movwf five
+	movlw d'9'
+	movwf nine
 
+	MOVLW d'10'
+	MOVWF COUNTDOWN_SEGUNDOS
+	MOVLW d'60'
+	MOVWF COUNTDOWN_MINUTOS
 
 ;--------------------------------------;
 ; 2.1 Puertos                          ;
@@ -133,7 +157,7 @@ START
 						
 	
 	;NOTA: ESTA PARTE FUE COPIADA DIRECTAMENTE DEL CODIGO DE LA AYUDANTIA. REVISAR----------
-	
+
 	BCF 	STATUS,RP1 	;Vamos al banco1
 	BSF 	STATUS,RP0	
 	
@@ -141,6 +165,7 @@ START
 	MOVLW B'00100001' 
 
 	MOVWF PIE1			; Aqui se puede usar la interr. del USART, etc.
+;	bsf PIE1,TMR1IE	
     
 ;CONFIGURACION CONEXION SERIAL
 	;CONFIGURACION TX y RX
@@ -153,9 +178,6 @@ START
 	MOVLW B'10010000'	;Enable
 	MOVWF RCSTA
 
-
-
-
 	BCF STATUS,RP0
 	BCF STATUS,RP1	; BANCO 0
 	
@@ -163,6 +185,7 @@ START
 	CLRF TMR1L
 	CLRF TMR1H	; Borro registros TMR1
 	MOVLW B'00000000'  ; Uso de clock interno, prescaler 1:4, Timer1 OFF
+	; MOVLW B'00000001'
 	MOVWF T1CON	
 	
 	;--------------------------------------------------------------------------------------
@@ -213,12 +236,25 @@ START
 	movwf	OPTION_REG		;Clock interno, prescaler para timer, prescaler = 1:8
 	bsf		INTCON,TMR0IE	;Habilitamos interrupciones por timer.
 	bcf		INTCON,TMR0IF	;Por defecto no hay desbordamiento
+
+	movlw b'00110001'
+	movwf T1CON
+	bsf PIE1,TMR1IE
+	bcf PIE1,TMR1IF
+
+
+
 ;--------------------------------------;
 ;2.6 Lcd							   ;
 ;--------------------------------------;
 	bcf	STATUS,RP1
 	bcf	STATUS,RP0	;Vamos al banco 0
 	
+	MOVLW H'FF'
+	MOVWF TMR1L
+	MOVWF TMR1H
+
+
 	call LCDInit
 	call LCDBusy
 
@@ -232,12 +268,19 @@ START
 	movwf serial_overflow_2
 	movlw b'00001011'
 	movwf prev_serial
+	
 
+	movlw 'b'
+	movwf test_serial
 ;--------------------------------------;
 ;2.7 LOOP PRINCIPAL
 ;--------------------------------------;
 	CALL TIMER_START
 LOOP
+	;ESPERO A ALGUNA INTERRUPCION DE RX
+	MOVLW B'00110000'
+	MOVWF TXREG
+
 	CALL LEER_LDR
 	CALL UBICAR_LDR
 	
@@ -260,8 +303,16 @@ LOOP
 
 	GOTO LOOP
 	
-Stop	clrwdt
-goto	Stop			;endless loop
+Stop	
+	MOVLW b'00000001'
+	MOVWF temp_wr
+	CALL i_write
+    CALL LCDBusy
+    CALL LCDBusy
+    CALL LCDBusy
+	
+STOPLOOP clrwdt
+goto	STOPLOOP			;endless loop
 ;--------------------------------------;
 ; 3 Subrutinas                         ;
 ;--------------------------------------;
@@ -285,28 +336,47 @@ Write_LCD
 	movlw	b'00000001'		;#7   Display Clear
 	movwf	temp_wr
 	call	i_write
-	call LCDBusy
-	call LCDBusy
-	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+    call LCDBusy
 
 	call LCDLine_1
 	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+	movf test_serial,0
+	movwf temp_wr
+	call d_write
 	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+	call LCDLine_2
+	call LCDBusy
+    call LCDBusy
+    call LCDBusy
 
 	movlw 'L'
 	movwf temp_wr
 	call d_write
 	call LCDBusy
+    call LCDBusy
+    call LCDBusy
 
 	movlw ':'
 	movwf temp_wr
 	call d_write
 	call LCDBusy
+    call LCDBusy
+    call LCDBusy
 
 	movlw ' '
 	movwf temp_wr
 	call d_write
 	call LCDBusy
+    call LCDBusy
+    call LCDBusy
 
 	movf LDR_CURRENT_LEVEL,0
 	movwf temp_wr
@@ -314,30 +384,36 @@ Write_LCD
 	bsf temp_wr,5
 	call d_write
 	call LCDBusy
-	call LCDBusy
-
-	call LCDLine_2
-	call LCDBusy
-	call LCDBusy
-;	movlw ' '
-;	movwf temp_wr
-;	call d_write
-;	call LCDBusy
-
-	movlw 'S'
-	movwf temp_wr
-	call d_write
-	call LCDBusy
-
-	movlw ':'
-	movwf temp_wr
-	call d_write
-	call LCDBusy
+    call LCDBusy
+    call LCDBusy
 
 	movlw ' '
 	movwf temp_wr
 	call d_write
 	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+	movlw 'S'
+	movwf temp_wr
+	call d_write
+	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+	movlw ':'
+	movwf temp_wr
+	call d_write
+	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+	movlw ' '
+	movwf temp_wr
+	call d_write
+	call LCDBusy
+    call LCDBusy
+    call LCDBusy
 
 	movf SND_CURRENT_LEVEL,0
 	movwf temp_wr
@@ -345,7 +421,47 @@ Write_LCD
 	bsf temp_wr,5
 	call d_write
 	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+	movlw ' '
+	movwf temp_wr
+	call d_write
 	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+	movlw 'T'
+	movwf temp_wr
+	call d_write
+	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+	movlw ':'
+	movwf temp_wr
+	call d_write
+	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+	movlw ' '
+	movwf temp_wr
+	call d_write
+	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+	movf COUNTDOWN_ACTUAL,0
+	movwf temp_wr
+	bsf temp_wr,4
+	bsf temp_wr,5
+	call d_write
+	call LCDBusy
+    call LCDBusy
+    call LCDBusy
+
+
 
 	movlw b'11111111'
 	movwf COUNT
@@ -570,9 +686,11 @@ INT
 	BCF INTCON,GIE	;APAGO INTERRUPCIONES
 	btfsc	INTCON,TMR0IF	;Hubo overflow en el timer?
 	call	TIMER_5CLCK	
-;BTFSC PIR1,TMR1IF  ; Si la interrupcion es por TMR1 overflow, voy al método
-;	CALL CONTAR
-    ; Hacemos polling de cada pin del puerto B (de RB4 a RB7)
+	
+	BTFSC PIR1,TMR1IF  ; Si la interrupcion es por TMR1 overflow, voy al método
+	GOTO DECREMENTAR_COUNTDOWN_SEGUNDOS
+    
+	; Hacemos polling de cada pin del puerto B (de RB4 a RB7)
 
 ;INTERRUPCIONES DESDE SERIAL
 	BTFSC PIR1,RCIF
@@ -589,12 +707,18 @@ INT
 	GOTO TIMER	
 	
 FINALLY
+	BCF STATUS,RP1
+	BCF STATUS,RP0
+
 
 	BCF PORTB,7
 	BCF PORTB,6
 	BCF PORTB,5
 	BCF PORTB,4
+	
 
+	call Delay100
+	call Delay100	
 	;Bajo los flags de las interrupciones 
 	BCF	INTCON,RBIF	
 	
@@ -605,29 +729,43 @@ FINALLY
 
 ;RUTINA USADA POR LA INTERRUPCION PARA RECIBIR UN MENSAJE Y CONTESTARLO------------
 RECIBIRYCONTESTAR
-	MOVF RCREG,0	;LEO EL DATO DESDE PC
+	;MOVF RCREG,0	;LEO EL DATO DESDE PC
+	movlw 'a'
+	movwf test_serial
+
+	call LCDLine_1
+	call LCDBusy
+	call LCDBusy
+	call LCDBusy
+
+	movwf temp_wr
+	call d_write
+	call LCDBusy
+	call LCDBusy
+	call LCDBusy
+	GOTO FINALLY
+
 ;	MOVWF TEMP
 ;	INCF TEMP,1		;INCREMENTO EN 1 Y GURADO EN TEMP
 ;	MOVF TEMP,0
 
 ;OBTENGO EL NIVEL DE LUZ
+
 	;Envio la luz
-	MOVF LDR_CURRENT_LEVEL,0
-	MOVWF temp_serial
-	BSF temp_serial,4
-	BSF temp_serial,5
-	MOVF temp_serial
-	CALL ENVIAR		;MANDA LO QUE HAY EN W
+	;MOVF LDR_CURRENT_LEVEL,0
+	;MOVWF temp_serial
+	;BSF temp_serial,4
+	;BSF temp_serial,5
+	;MOVF temp_serial
+	;CALL ENVIAR		;MANDA LO QUE HAY EN W
 	
 	;Envio el sonido
-	MOVF LDR_CURRENT_LEVEL,0
-	MOVWF temp_serial
-	BSF temp_serial,4
-	BSF temp_serial,5
-	MOVF temp_serial
-	CALL ENVIAR
-
-	RETURN
+	;MOVF LDR_CURRENT_LEVEL,0
+	;MOVWF temp_serial
+	;BSF temp_serial,4
+	;BSF temp_serial,5
+	;MOVF temp_serial
+	;CALL ENVIAR
 
 ENVIAR
 	MOVWF TXREG		;MANDO DATO
@@ -639,27 +777,126 @@ PLAY_PAUSE
 	;Imprimimos uno en los leds
 	BCF	 PORTD,1
 	BSF  PORTD,0
+	
+	movlw d'66'
+	CALL ENVIAR
+
 	GOTO FINALLY
+
 BACKWARD
 	;Rutina de backward
 	;imprimimos dos en los leds
 	BSF	 PORTD,1
 	BCF  PORTD,0
+	
+	movlw d'77'
+	CALL ENVIAR
+
 	GOTO FINALLY
+
 FORWARD
 	;Rutina de forward
 	;Imprimimos trés en los leds
 	BSF  PORTD,1
 	BSF  PORTD,0
+
+	movlw d'88'
+	CALL ENVIAR
+
 	GOTO FINALLY
+
 TIMER
 	;Rutina de timer
 	;Imprimimos 0 en los bits
 	BCF	 PORTD,1
 	BCF	 PORTD,0
+
+	GOTO TIMER_LEVEL0
+	
+	GOTO FINALLY
+
+TIMER_LEVEL0
+	MOVF COUNTDOWN,0
+	BTFSS STATUS,Z
+	GOTO TIMER_LEVEL1
+	MOVLW d'1'
+	MOVWF COUNTDOWN
+	MOVWF COUNTDOWN_ACTUAL
+	BCF STATUS,RP1
+	BSF STATUS,RP0
+	BSF PIE1,TMR1IE
+	GOTO FINALLY
+
+TIMER_LEVEL1
+	MOVF COUNTDOWN,0
+	SUBWF one,0
+	BTFSS STATUS,Z
+	GOTO TIMER_LEVEL5
+	MOVLW d'5'
+	MOVWF COUNTDOWN
+	MOVWF COUNTDOWN_ACTUAL
+	BCF STATUS,RP1
+	BSF STATUS,RP0
+	BSF PIE1,TMR1IE
+	GOTO FINALLY
+
+TIMER_LEVEL5
+	MOVF COUNTDOWN,0
+	SUBWF five,0
+	BTFSS STATUS,Z
+	GOTO TIMER_LEVEL9
+	MOVLW d'9'
+	MOVWF COUNTDOWN
+	MOVWF COUNTDOWN_ACTUAL
+	BCF STATUS,RP1
+	BSF STATUS,RP0
+	BSF PIE1,TMR1IE
+	GOTO FINALLY
+
+TIMER_LEVEL9
+	MOVF COUNTDOWN,0
+	SUBWF nine,0
+	MOVLW d'0'
+	MOVWF COUNTDOWN
+	MOVWF COUNTDOWN_ACTUAL
+	BCF STATUS,RP1
+	BSF STATUS,RP0
+	BCF PIE1,TMR1IE
+	GOTO FINALLY
+
+DECREMENTAR_COUNTDOWN_SEGUNDOS
+	BCF PIR1,TMR1IF
+	BCF STATUS,RP1
+	BCF STATUS,RP0
+	MOVLW H'FF'
+	MOVWF TMR1L
+	MOVWF TMR1H
+	MOVF COUNTDOWN_SEGUNDOS,0
+	BTFSC STATUS,Z
+	GOTO DECREMENTAR_COUNTDOWN_MINUTOS
+	DECF COUNTDOWN_SEGUNDOS,0
+	GOTO FINALLY
+
+DECREMENTAR_COUNTDOWN_MINUTOS
+	MOVLW d'10'
+	MOVWF COUNTDOWN_SEGUNDOS
+	MOVF COUNTDOWN_MINUTOS,0
+	BTFSC STATUS,Z
+	GOTO DECREMENTAR_COUNTDOWN_ACTUAL
+	DECF COUNTDOWN_MINUTOS,0
+	GOTO FINALLY
+
+DECREMENTAR_COUNTDOWN_ACTUAL
+	MOVLW d'60'
+	MOVWF COUNTDOWN_MINUTOS
+	MOVF COUNTDOWN_ACTUAL
+	BTFSC STATUS,Z
+	GOTO Stop
+	DECF COUNTDOWN_ACTUAL,0
 	GOTO FINALLY
 
 
+		
 ;--------------------------------------;
 ;3.4 Rutinas de LCD					   ;
 ;--------------------------------------;	
