@@ -144,7 +144,7 @@ Los requerimientos mínimos que debe cumplir el dispositivo son los siguientes:
 %describir lo que hicimos en esta entrega(el diseño y todo eso, pero por encima, después se profundiza en este informe)\\
 %describir las exigencias para el circuito (o sea poner la lista que aparece en el enunciado que tiene que es lo que debe hacer nuestro circuito: entradas análoga, interrupciones, el pic, etc)\\
 
-\section{Diseño del dispositivo}
+\section{Implementación del dispositivo}
 En esta sección se describirá el circuito que hace posible el funcionamiento de nuestro sistema. Este dispositivo consiste en una placa controladora conectada a componentes que permiten sensar el ambiente, a elementos de interfaz de usuario y a un computador.
 %introducción a esta parte, cuales son los componentes a conectar. y su funcionalidad\\
 
@@ -294,7 +294,7 @@ Se presentará el diseño del circuito en dos diagramas. Primero se muestra el dia
 
 \newpage
 
-\subsection{Implementación del dispositivo}
+\subsection{Implementación del \textit{hardware}}
 A continuación se explicará como se conectarán los distintos dispositivos, su configuración y la forma en que serán utilizados. 
 
 %línea introductoria\\
@@ -450,6 +450,43 @@ Para el detalle de conexión de todos sus pines, ver cuadro 1.
 	\item[Regulador de voltaje] El regulador de voltaje nos permite mantener un voltaje controlado para los componentes. 
 \end{description}
 %poner el regulador del voltaje, algún pin no conectado al pic, etc, muy corto, una línea\\
+
+
+\newpage
+\subsection{Implementación de Software}
+\subsubsection{SmartMusic2Winamp}
+Este software ha sido desarrollado en C\verb@#@ y permite comunicar el PC con el PIC desde el lado del PC. Su funcionalidad es recibir datos desde el PIC a través del puerto serial
+y en función éstos realizar una acción particular en Winamp\footnote{Software de reproducción musical. Más información: www.winamp.com}: Cambiar la lista de reproducción, iniciar/detener la reproducción, avanzar a la siguiente pista, retroceder a la pista anterior. Además se encarga de enviar información hacia el PIC, en particular el título de la canción que se está reproduciendo actualmente.
+
+El software recibe bytes desde el PIC, los cuales corresponden a caracteres ASCII en función de los cuales el software decide la acción a ejecutar. Para esto utiliza un sistema de eventos, en el cual los métodos que determinan la acción a ejecutar se encuentran suscritos a la llegada de nuevos datos desde el PIC. Por otra parte, existe un método suscrito al cambio de una canción en Winamp que envía el nombre de la nueva canción hacia el PIC.
+
+Para utilizar SmartMusic2Winamp, se deben crear listas de reproducción de extensión .m3u con la sintaxis [NivelLuz][NivelAudio].m3u, donde NivelLuz y NivelAudio pueden tomar los valores 1,2 o 3 dependiendo del nivel sensado correspondiente a esa lista. Estas listas deben ser guardadas en la carpeta de SmartMusic2Winamp. Por lo tanto, esta carpeta debería contener los archivos 11.m3u,12.m3u,13.m3u,21.m3u,22.m3u,23.m3u,31.m3u,32.m3u,33.m3u.
+
+\subsubsection{Software Assembler}
+Este software se encuentra almacenado en el PIC. Sus funciones son:
+
+\begin{itemize}
+	\item Determinar el nivel de luz y volumen en función de los valores detectados en los sensores.
+	\item Configurar y escribir en la pantalla LCD información acerca de la pista de reproducción y los niveles detectados.
+	\item Comunicarse con el PC a través del puerto serial, enviando información sobre los sensores y recibiendo información acerca de la canción reproducida.
+	\item Determinar y manejar interrupciones de los botones, para determinar la acción a enviar al computador (\textit{play/pause,backward,forward})
+	\item Determinar y manejar interrupciones de timer, a fin de apagar el dispositivo transcurrido cierto tiempo (determinado por el usuario)
+\end{itemize}
+
+El software comienza configurando los registros del PIC en función de las funcionalidades requeridas (el detalle de estta configuración se encuentra en la sección Implementación de Hardware). Luego entra en un ciclo dentro del cual se realizan las siguientes acciones:
+\begin{enumerate}
+	\item Obtiene voltaje correspondiente a la cantidad de luz y volumen del ambiente.
+	\item Determina el nivel correspondiente a los valores detectados.
+	\item Envía información al PC sobre los niveles detectados.
+	\item Recibe información desde el PC con el título de la canción.
+	\item Escribe en la pantalla LCD el título de la canción y los niveles de luz y sonido.
+\end{enumerate}
+
+Y además debe responder a las siguientes interrupciones:
+\begin{itemize}
+	\item Al pulsar un boton entra a una interrupción en la cual envía la acción correspondiente al PC.
+	\item Al ocurrir una interrupción de \textit{Timer1 Overflow} decrementa el contador de tiempo que le indica cuando apagarse.
+\end{itemize}
 
 \newpage
 \section{Limitaciones y problemas encontrados}
