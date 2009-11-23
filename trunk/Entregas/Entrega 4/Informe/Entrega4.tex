@@ -456,7 +456,7 @@ A continuación se presentarán los problemas que se acontecieron en la realizació
 	\item El segundo problema que surgió se relaciona con la configuración del timer TMR1. Con respecto a este módulo, surgieron dos problemas que no logramos resolver:
 	
 \begin{enumerate}
-	\item Cuando el timer TMR1 está en enable, la pantalla LCD se paraliza. Vemos que una causa probable de este error es que la interrupción de timer detiene el flujo normal del programa ejecutando la subrutina de la interrupción. Ahora, si es que se estaba ejecutando una instrucción de la pantalla LCD mientras ocurre una interrupción, puede causar un error en el LCD. Para evitar esto, mientra se ejecutan las instrucciones de la pantalla, se desactivan todas las instrucciones haciendo clear del registro INTCON$<$7$>$. A pesar de lo anterior, de todas formas falla el funcionamiento del LCD cuando se activa el timer.
+	\item Cuando el timer TMR1 está en enable, la pantalla LCD se paraliza. Vemos que una causa probable de este error es que la interrupción de timer detiene el flujo normal del programa ejecutando la subrutina de la interrupción. Ahora, si es que se estaba ejecutando una instrucción de la pantalla LCD mientras ocurre una interrupción, puede causar un error en el LCD. Para evitar esto, mientras se ejecutan las instrucciones de la pantalla, se desactivan todas las instrucciones haciendo clear del registro INTCON$<$7$>$. A pesar de lo anterior, de todas formas falla el funcionamiento del LCD cuando se activa el timer.
 	\item Se observó al simular el código que al utilizar el timer TMR1, cada vez que transcurrió cierto tiempo, se interrumpe la ejecución actual del programa comenzando nuevamente su ejecución. Creemos que el problema se podría deber al Watchdog Timer, el cual podría estar reiniciando el programa cuando este está en un loop muy largo. Por este motivo desactivamos este timer, pero no obtuvimos resultados favorables.  
 \end{enumerate}
 
@@ -465,9 +465,12 @@ A continuación se presentarán los problemas que se acontecieron en la realizació
 
 De todas formas, es importante recalcar que a pesar de los errores anteriores nuestro dispositivo cumple su principal funcionalidad que corresponde a controlar la reproducción de la música en un computador a partir del nivel de luz y de sonido que están presentes en el ambiente.\\
 
+A continuación se presentarán las principales limitaciones que tiene nuestro dispositivo. Parte de éstas están asociadas con los problemas presentados anteriormente.
 \begin{itemize}
-	\item Para establecer el tiempo en el que el dispositivo detendrá su reproducción se utiliza únicamente un botón, existiendo una flexibilidad reducida para cambiar el tiempo (disminuirlo por ejemplo)
-	\item Existen solamente 9 estados posibles para distintos tipos de música según los 3 niveles de sonido y de luz respectivamente.
+\item Como fue mencionado en uno de los problemas anteriores, en nuestro dispositivo no funciona correctamente el timer que sería utilizado para detener la reproducción.
+\item También, se observa que el dispositivo no es capaz de mostrar en la pantalla LCD el nombre de la canción que se está reproduciendo.
+	\item Junto con lo anterior, se observa que para establecer el tiempo en el que el dispositivo detendrá su reproducción se utiliza únicamente un botón, existiendo una flexibilidad reducida para modificar este tiempo (disminuirlo o aumentarlo por ejemplo), estando el usuario obligado a elegir periodos de tiempos predefinidos.
+	\item Por último, se observa que existen solamente 9 estados posibles para distintos tipos de música según los 3 niveles de sonido y de luz respectivamente.
 	
 \end{itemize}
 
