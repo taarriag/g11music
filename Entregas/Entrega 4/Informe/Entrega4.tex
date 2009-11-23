@@ -41,6 +41,38 @@
 \newcommand{\KeywordsColor}{\color{blue}}
 %\newcommand{\KeywordsColor}{\color{black}}
 
+% Define the C# languaje style
+\lstdefinelanguage{CSharp}
+{
+	basicstyle=\small\ttfamily,
+	keywordstyle=\KeywordsColor\textbf,
+	keywordstyle=[2]\UserKeywordsColor,
+	keywordstyle=[3]\StringColor,
+	tabsize=2,
+	morekeywords={abstract, as, base, bool, break, byte, case, 
+		catch, char, checked,class, const, continue, decimal, 
+		default, delegate, do, double, else, enum, event, explicit,
+		extern, false, finally, fixed, float, for, foreach, get, goto, 
+		if, implicit, in, int, interface, internal, is, lock, long,
+		namespace, new, null, object, operator, out, override, 
+		params, partial, private, protected, public, readonly, ref, return, 
+		sbyte, sealed, set, short, sizeof, stackalloc, static, string,
+		struct, switch, this, throw, try, typeof, true, uint, ulong, 
+		unchecked, unsafe, ushort, using, value, virtual, volatile,
+		void, while, where},
+	morekeywords=[2]{Program,Console,String},
+	morekeywords=[3]{@}, 
+	commentstyle=\CommentColor,
+	stringstyle=\StringColor,
+	sensitive=true,
+	morecomment=[l]{//},
+	morecomment=[s]{/*}{*/},
+	morestring=[b]",
+	showstringspaces=false,
+	aboveskip=0pt, 
+	belowskip=0pt,
+	mathescape=true
+}
 
 \lstset
 {
@@ -408,7 +440,7 @@ El puerto serial se usará tanto para cargar nuestro programa, como para comunica
 %poner el regulador del voltaje, algún pin no conectado al pic, etc, muy corto, una línea\\
 
 \newpage
-\section{Código}
+\section{Código del Microcontrolador}
 \subsection{Programa principal}
 \lstinputlisting{../Codigo/SmartMusic/Programa.asm}
 
@@ -418,10 +450,30 @@ Código basado en ejemplo de Microchip. Fuente: \href{http://www.microchip.com/st
 \lstinputlisting{../Codigo/SmartMusic/p16lcd.asm}
 
 \newpage
+\section{Código del Computador}
+El código utilizado está programado en C\#, utilizando la librería WinAmp Front End Library  http://www.codeproject.com/KB/cs/winamparticle.aspx
+
+\lstset{language={CSharp}}
+
+\subsection{Program}
+\lstinputlisting{../SmartMusicFrontEnd/SmartMusic/Program.cs}
+
+\subsection{WinampConnection}
+\lstinputlisting{../SmartMusicFrontEnd/SmartMusic/WinampConnection.cs}
+
+\subsection{SerialComm}
+\lstinputlisting{../SmartMusicFrontEnd/SmartMusic/SerialComm.cs}
+
+\subsection{Form1}
+\lstinputlisting{../SmartMusicFrontEnd/SmartMusic/Form1.cs}
+
+
+\newpage
 \section{Limitaciones y problemas encontrados}
 %pendiente
 \begin{itemize}
 	\item Para establecer el tiempo en el que el dispositivo detendrá su reproducción se utiliza únicamente un botón, existiendo una flexibilidad reducida para cambiar el tiempo (disminuirlo por ejemplo)
+	\item Existen solamente 9 estados posibles para distintos tipos de música según los 3 niveles de sonido y de luz respectivamente.
 \end{itemize}
 
 

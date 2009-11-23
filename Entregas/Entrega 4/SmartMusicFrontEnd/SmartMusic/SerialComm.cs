@@ -16,7 +16,7 @@ namespace SmartMusic
         public event IncomingInfoEventHandler IncomingInfoEvent;
 
         /// <summary>
-        /// Obtiene el puerto de esta comunicación serial
+        /// Obtiene el puerto de esta comunicacion serial
         /// </summary>
         public string Port
         {
@@ -25,9 +25,9 @@ namespace SmartMusic
         }
 
         /// <summary>
-        /// Inicializa una instancia de comunicación serial en el puerto de nombre portName
+        /// Inicializa una instancia de comunicacion serial en el puerto de nombre portName
         /// </summary>
-        /// <param name="portName">Nombre del puerto en el cual se inicializará la comunicación</param>
+        /// <param name="portName">Nombre del puerto en el cual se inicializará la comunicacion</param>
         public SerialComm(string portName)
         {
             sp = new SerialPort();
@@ -38,7 +38,7 @@ namespace SmartMusic
         
         /// <summary>
         /// Abre el puerto asociado a esta instancia de SerialComm, 
-        /// inicializando la conexión con el pic.
+        /// inicializando la conexion con el pic.
         /// </summary>
         public void Start()
         {

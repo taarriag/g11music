@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -35,7 +35,7 @@ namespace SmartMusic
         /// a partir de este string. 
         /// 
         /// Si estos niveles son distintos a los anteriores, cambia la lista de 
-        /// reproducción en winamp.
+        /// reproduccion en winamp.
         /// </summary>
         /// <param name="text">String en el cual deben estar escritos los niveles (en decimal)</param>
         public void GetNewLevels(string text)
@@ -57,7 +57,7 @@ namespace SmartMusic
         }
 
         /// <summary>
-        /// Cambia la lista a reproducir en función del
+        /// Cambia la lista a reproducir en funcion del
         /// nivel de luz y sonido entrante
         /// </summary>
         /// <param name="new_ldr_level">Nuevo nivel de luz</param>
@@ -75,7 +75,7 @@ namespace SmartMusic
 
 
         /// <summary>
-        /// Realiza una acción básica sobre winamp en función del id ingresado
+        /// Realiza una accion basica sobre winamp en funcion del id ingresado
         /// </summary>
         /// <param name="action_id"></param>
         public void DoAction(int action_id)
