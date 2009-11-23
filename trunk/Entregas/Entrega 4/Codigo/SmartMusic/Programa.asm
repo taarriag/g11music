@@ -77,7 +77,7 @@ START
 
 ;-------------------------
 ;bcf                 STATUS,0       ;make sure we are in bank 0
-;clrf                 01h               ;address of the other timer – TMR0
+;clrf                 01h               ;address of the other timer  TMR0
 ;bsf                 STATUS,0       ;switch to bank 1
 ;clrwdt                                 ;reset the WDT and prescaler
 ;movlw             B'1111'            ;Select the new prescaler value and assign
