@@ -96,7 +96,7 @@
 
 
 % $Rev: 595 $
-\title{\Huge \textbf{Arquitectura de Computadores}\\\Huge \textbf{Proyecto: SmartMusic}\\\Large \textbf{Entrega 2}}
+\title{\Huge \textbf{Arquitectura de Computadores}\\\Huge \textbf{Proyecto: SmartMusic}\\\Large \textbf{Entrega 4}}
 \author{Grupo G11}
 \date{23 de Noviembre de 2009}
 \begin{document}
@@ -123,9 +123,9 @@
 \section{Introducción}
 En diversas ocasiones y circunstancias, se desea reproducir música. Ésta puede ser música ambiental, para acompañar una junta social, o música de algún género particular para deleitarse escuchándola. Lamentablemente, muchas veces ocurre que esta música no es la adecuada al estado de ánimo del lugar. En muchas ocasiones, el nivel de ruido disminuye, pero la música se mantiene fuerte, dificultando la comunicación. En otras, el género de la música no es el adecuado para las circunstancias. Lo anterior causa que alguien deba encargarse de controlar constantemente la reproducción musical.\\
 
-Para solucionar el problema antes mencionado, en este proyecto semestral se desarrollará un dispositivo que controlará la reproducción musical de un computador. Este dispositivo consiste en un microcontrolador, el que estará conectado a un computador y tendrá dos sensores: uno medirá el nivel de ruido en el ambiente y el otro el nivel de luminosidad del mismo. Ambos sensores entregarán tres posibles niveles de ruido o luminosidad, lo cual genera 9 combinaciones distintas. La combinación presente en el ambiente será enviada al computador, en el cual se estará ejecutando un software diseñado para comunicarse con el dispositivo (además del software de reproducción de la música).  Éste elegirá una de entre 9 listas de reproducción distintas con su respectivo volumen, las que podrán ser configuradas por el usuario. De esta forma, el dispositivo controlará de manera automática la música reproducida en cierto lugar ajustándola a las condiciones ambientales.\\
+Para solucionar el problema antes mencionado, en este proyecto semestral se ha desarrollado un dispositivo que controla la reproducción musical de un computador. Este dispositivo consiste en un microcontrolador, el que está conectado a un computador y que posee dos sensores: uno mide el nivel de ruido en el ambiente y el otro el nivel de luminosidad del mismo. Ambos sensores entregan tres posibles niveles de ruido o luminosidad, lo cual genera 9 combinaciones distintas. La combinación presente en el ambiente es enviada al computador, en el cual se está ejecutando un software diseñado para comunicarse con el dispositivo (además del software de reproducción música).  Éste elege una de entre 9 listas de reproducción distintas con su respectivo volumen, las que podrán ser configuradas por el usuario. De esta forma, el dispositivo controla de manera automática la música reproducida en cierto lugar ajustándola a las condiciones ambientales.\\
 
-Adicionalmente al control automático de la música, el dispositivo también permitirá comenzar y detener la reproducción junto con adelantar y retroceder de canción. Esto será a través de 3 botones puestos en el dispositivo: uno de \textit{play/pause}, uno de \textit{forward} y un último de \textit{backward}. Además, el usuario podrá programar un \textit{timer} el cual tiene el tiempo en que el dispositivo pueda iniciar o detener automáticamente la reproducción. Esto se realiza con un botón, el cual al oprimirlo una vez, incrementará el tiempo de espera en una cantidad predefinida. \emph{Si se mantiene el botón oprimido por más de 3 segundos, se reestablecerá el tiempo de espera a 0}. Por último, el dispositivo posee una pantalla LCD la cual permitirá mostrar el nombre de la canción reproducida, en conjunto con el tiempo actual del \textit{timer}.\\
+Adicionalmente al control automático de la música, el dispositivo también permite comenzar y detener la reproducción junto con adelantar y retroceder de canción. Esto es a través de 3 botones puestos en el dispositivo: uno de \textit{play/pause}, uno de \textit{forward} y un último de \textit{backward}. Además, el usuario puede programar un \textit{timer} el cual tiene el tiempo en que el dispositivo pueda iniciar o detener automáticamente la reproducción. Esto se realiza con un botón, el cual al oprimirlo una vez, incrementa el tiempo de espera en una cantidad predefinida. \emph{Si se mantiene el botón oprimido por más de 3 segundos, se reestablece el tiempo de espera a 0}. Por último, el dispositivo posee una pantalla LCD la cual permite mostrar el nombre de la canción reproducida, en conjunto con el tiempo actual del \textit{timer}.\\
 
 Los requerimientos mínimos que debe cumplir el dispositivo son los siguientes:
 \begin{itemize}
@@ -313,7 +313,7 @@ Los dispositivos análogos a utilizar son:
 		\item Código: ZX-Sound
 		\item Descripción: Este dispositivo detecta la intensidad sonora del ambiente y genera un voltaje correspondiente cuyo valor fluctúa entre 0V y 5V.
 		\item Requisitos asociados: ADC/PWM para la conversión analógica digital del voltaje entregado por el componente.
-		\item Conexión al PIC: Puerto AN0 para leer el voltaje generado desde el componente.
+		\item Conexión al PIC: Puerto AN3 para leer el voltaje generado desde el componente.
 	\end{itemize}
 
 
@@ -323,7 +323,7 @@ Los dispositivos análogos a utilizar son:
 		\item Código: ZX-LDR
 		\item Descripción: Este dispositivo detecta la intensidad lumínica del ambiente y genera un voltaje correspondiente cuyo valor fluctúa entre 0V y 5V.
 		\item Requisitos asociados: ADC/PWM para la conversión analógica digital del voltaje entregado por el componente.
-		\item Conexión al PIC: Puerto AN1 para leer el voltaje generado desde el componente.
+		\item Conexión al PIC: Puerto AN2 para leer el voltaje generado desde el componente.
 	\end{itemize}
 
 \end{enumerate}	
@@ -342,12 +342,12 @@ Los dispositivos análogos a utilizar son:
 		\item Código: GDM1602K
 		\item Descripción: Display de 16 x 2 caracteres (2 líneas de hasta 16 caracteres). Dispone de once pines para la comunicación con el PIC y utiliza el chip HD44780 para su configuración y escritura.
 		\item Requisitos asociados: Entrada/Salida DIO Bidireccional. PIC envía instrucciones al \textsl{display} y éste a su vez notifica a través del RS/Flag al PIC acerca de la completitud de la instrucción.
-		\item Conexión al PIC: Pines del \textsl{display} (D7,D6,D5,D4,RS,RW,E) conectados al Puerto D del PIC (RD7,RD6,RD5,RD4,RD3,RD2,RD1).
+		\item Conexión al PIC: Pines del \textsl{display} (D7,D6,D5,D4,RS,RW,E) conectados al Puerto D del PIC (RD7,RD6,RD5,RD3,RD2,RD1,RD0).
 	\end{itemize}
                                                                                                                                                         
 Este dispositivo es utilizado con el fin de mostrar información sobre la canción actual que se está reproduciendo en el computador conectado al dispositivo. Además indica el valor actual del \textsl{timer} que permite detener o iniciar automáticamente la reproducción de música.\\
                                                                                                                        
-Este \textsl{display} posee once pines configuración: RS/Flag, Read/Write, Enable y Datos (D0 A D7). De todas formas ofrece la posibilidad de ser configurado y utilizado haciendo uso de siete pines, para lo cual es necesario enviar dos valores consecutivos por instrucción. En particular, hemos optado por la segunda opción a fin de utilizar una menor cantidad de pines en el PIC, y porque no teníamos la cantidad suficiente de pines en un mismo puerto para enviar la instrucción completa (de 11 bits de largo). Las palabras de operación serán enviadas desde el Puerto D del PIC, para lo cual debemos configurar el registro TRISD de tal forma que los pines RD4, RD5, RD6 Y RD7 sean de salida digital.\\
+Este \textsl{display} posee once pines configuración: RS/Flag, Read/Write, Enable y Datos (D0 A D7). De todas formas ofrece la posibilidad de ser configurado y utilizado haciendo uso de siete pines, para lo cual es necesario enviar dos valores consecutivos por instrucción. En particular, hemos optado por la segunda opción a fin de utilizar una menor cantidad de pines en el PIC, y porque no teníamos la cantidad suficiente de pines en un mismo puerto para enviar la instrucción completa (de 11 bits de largo). Las palabras de operación serán enviadas desde el Puerto D del PIC, para lo cual debemos configurar el registro TRISD de tal forma que los pines RD3, RD5, RD6 Y RD7 sean de salida digital.\\
 
 El proceso de escritura es guiado por las instrucciones enviadas desde el PIC y consiste en la siguiente secuencia:
 	\begin{enumerate}
@@ -397,8 +397,8 @@ Cada vez que el usuario pulse un botón, se ejecutará una interrupción la cual de
 	
 El puerto serial se usará tanto para cargar nuestro programa, como para comunicarnos con el PC para enviar la información del nivel de reproducción  actual y para recibir el título de la canción. 
 
-Para la comunicación entre el PIC y el PC se ha configurado el modulo USART (Universal Synchronous Asynchronous Receiver Transmiter) a través 
-del registro TXSTA. El módulo ha sido configurado como un sistema \textbf{asincrono} a fin de comunicarse con un computador personal y en modo de transmisión de 8 bits. Además se ha configurado el registro SPBRG para un baud rate de 9600 bps y una frecuencia de 20Mhz (correspondiente a la frecuencia del cristal del PIC). Finalmente se ha configurado el registro RCSTA para habilitar la comunicación a través del puerto serial en modo asincrono y para recepción \textbf{continua} de los datos.
+Para la comunicación entre el PIC y el PC se ha configurado el módulo USART (Universal Synchronous Asynchronous Receiver Transmiter) a través 
+del registro TXSTA. El módulo ha sido configurado como un sistema \textbf{asincrono}, a fin de comunicarse con un computador personal y en modo de transmisión de 8 bits. Además se ha configurado el registro SPBRG para un baud rate de \textbf{9600 bps} y una frecuencia de \textbf{20Mhz} (correspondiente a la frecuencia del cristal del PIC). Finalmente se ha configurado el registro RCSTA para habilitar la comunicación a través del puerto serial en modo asincrono y para recepción \textbf{continua} de los datos.
 
 En nuestro sistema, el PIC está constantemente enviando información hacia el PC, en particular, los niveles detectados en los sensores e información 
 acerca de la posible pulsación de un botón. 
