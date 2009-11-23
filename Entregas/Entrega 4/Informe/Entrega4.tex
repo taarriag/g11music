@@ -4,6 +4,8 @@
 \usepackage{graphicx}
 \usepackage{anysize} %Permitir distintas medidas de margenes
 \usepackage{array}
+\usepackage{listings}
+\usepackage[usenames,dvipsnames]{color}
 
 % Configuración PDF
 \usepackage[pdftex]{hyperref}
@@ -17,6 +19,49 @@
 }
 
 \marginsize{3cm}{2cm}{2cm}{4cm}
+
+%%%% LISTINGS CUSTOMIZATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Color de los comentarios, por si escapamos a LaTeX en un lstlisting
+\newcommand{\CommentColor}{\color{ForestGreen}}
+%\newcommand{\CommentColor}{\color{black}}
+
+
+% String color used in listings
+\newcommand{\StringColor}{\color{red}}
+%\newcommand{\StringColor}{\color{black}}
+
+
+% User keywords color
+\newcommand{\UserKeywordsColor}{\color{YellowOrange}}
+%\newcommand{\UserKeywordsColor}{\color{black}}
+
+
+% Keywords color
+\newcommand{\KeywordsColor}{\color{blue}}
+%\newcommand{\KeywordsColor}{\color{black}}
+
+
+\lstset
+{
+	basicstyle=\small\ttfamily,
+	keywordstyle=\KeywordsColor\textbf,
+	keywordstyle=[2]\UserKeywordsColor,
+	keywordstyle=[3]\StringColor,
+	tabsize=2,
+	commentstyle=\CommentColor,
+	stringstyle=\StringColor,
+	sensitive=true,
+	morestring=[b]",
+	showstringspaces=false,
+	breaklines=true
+	aboveskip=3pt, 
+	belowskip=30pt,
+	mathescape=false
+}
+
+\lstset{language={[x86masm]Assembler}}
+
 
 % $Rev: 595 $
 \title{\Huge \textbf{Arquitectura de Computadores}\\\Huge \textbf{Proyecto: SmartMusic}\\\Large \textbf{Entrega 2}}
@@ -191,6 +236,7 @@ Componentes adicionales para la placa
 	\end{center}
 \end{table}
 
+Costo total: \$31.968
 
 \subsection{Diagrama del circuito}
 Se presentará el diseño del circuito en dos diagramas. Primero se muestra el diagrama de la placa controladora con todas las conexiones posibles (Figura: \ref{fig:PIC}). Luego se muestra un segundo diagrama con las conexiones de los dispositivos externos a la placa (Figura: \ref{fig:SmartMusic}). No se mostraron ambos diseños en el mismo diagrama por motivos de orden. Es importante recalcar que las dos entradas análogas (sensores de sonido y luminosidad) son representadas por dos potenciómetros por motivos de simulación. Esto se puede hacer ya que ambos sensores entregan un voltaje de entre 0V y 5V (como será explicado en la sección de implementación), al igual que un potenciómetro.
@@ -317,16 +363,7 @@ Cada vez que el usuario pulse un botón, se ejecutará una interrupción la cual de
 		\item Conexión al PIC: Pines T1IN y R2OUT del MAX232 a los pines RC6 y RC7 del PIC respectivamente (ver cuadro 1).
 	\end{itemize}
 	
-El puerto serial se usará tanto para cargar nuestro programa, como para comunicarnos con el PC para enviar la información del nivel de reproducción  actual y para recibir el título de la canción. 
-
-Para la comunicación entre el PIC y el PC se ha configurado el modulo USART (\it{Universal Synchronous Asynchronous Receiver Transmiter}) a través 
-del registro TXSTA. El módulo ha sido configurado como un sistema \textbf{asincrono} a fin de comunicarse con un computador personal y en modo de transmisión de 8 bits. Además se ha configurado el registro SPBRG para un baud rate de 9600 bps y una frecuencia de 20Mhz (correspondiente a la frecuencia del cristal del PIC). Finalmente se ha configurado el registro RCSTA para habilitar la comunicación a través del puerto serial en modo asincrono y para recepción \textbf{continua} de los datos.
-
-En nuestro sistema, el PIC está constantemente enviando información hacia el PC, en particular, los niveles detectados en los sensores e información 
-acerca de la posible pulsación de un botón. 
-
-Para el detalle de conexión de todos sus pines, ver cuadro 1.
-
+El puerto serial se usará tanto para cargar nuestro programa, como para comunicarnos con el PC para enviar la información del nivel de reproducción actual y para recibir el título de la canción. Para el detalle de conexión de todos sus pines, ver cuadro 1.
 %-----------------------------------------
 \begin{figure}
 	\centering
@@ -370,6 +407,26 @@ Para el detalle de conexión de todos sus pines, ver cuadro 1.
 \end{description}
 %poner el regulador del voltaje, algún pin no conectado al pic, etc, muy corto, una línea\\
 
+\newpage
+\section{Código}
+\subsection{Programa principal}
+\lstinputlisting{../Codigo/SmartMusic/Programa.asm}
+
+\subsection{Rutinas LCD}
+Código basado en ejemplo de Microchip. Fuente: \href{http://www.microchip.com/stellent/idcplg?IdcService=SS\_GET\_PAGE\&nodeId=1406\&dDocName=en010072\&part=DM163022}{PICDEM2 Plus}
+
+\lstinputlisting{../Codigo/SmartMusic/p16lcd.asm}
+
+\newpage
+\section{Limitaciones y problemas encontrados}
+%pendiente
+\begin{itemize}
+	\item Para establecer el tiempo en el que el dispositivo detendrá su reproducción se utiliza únicamente un botón, existiendo una flexibilidad reducida para cambiar el tiempo (disminuirlo por ejemplo)
+\end{itemize}
+
+
+
+\newpage
 \section{Anexos}
 \subsection{Anexo 1: Diagrama de flujo circuito LEDs}
 \begin{figure}[h]
