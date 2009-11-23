@@ -15,9 +15,6 @@ namespace SmartMusic
         private SerialPort sp;
         public event IncomingInfoEventHandler IncomingInfoEvent;
 
-        /// <summary>
-        /// Obtiene el puerto de esta comunicacion serial
-        /// </summary>
         public string Port
         {
             set { this.sp.PortName = value; }
@@ -36,10 +33,6 @@ namespace SmartMusic
             sp.PortName = portName;
         }
         
-        /// <summary>
-        /// Abre el puerto asociado a esta instancia de SerialComm, 
-        /// inicializando la conexion con el pic.
-        /// </summary>
         public void Start()
         {
             try
@@ -53,9 +46,6 @@ namespace SmartMusic
             }
         }
 
-        /// <summary>
-        /// Cierra el puerto asociado a esta instancia de SerialComm
-        /// </summary>
         public void Close()
         {
             if (sp.IsOpen)
@@ -74,17 +64,8 @@ namespace SmartMusic
             byte[] buffer = new byte[sp.ReadBufferSize];
             int count = 0;
             string readed_line = "";
-
-            //readed_line += sp.ReadByte();
             sp.Read(buffer, sp.ReadBufferSize * count, sp.ReadBufferSize);
             readed_line += buffer[0];
-            /*
-            while (sp.BytesToRead > 0)
-            {
-                readed_line += sp.Read(buffer, sp.ReadBufferSize * count, sp.ReadBufferSize);
-                //readed_line += sp.Read(buffer, sp.ReadBufferSize * count, 1);
-            }
-             */ 
             ProcReceived(readed_line);
         }
 
@@ -123,7 +104,6 @@ namespace SmartMusic
                 display += msg_byte[i].ToString() + " ";
                 Send(msg_byte[i]);
                 Thread.Sleep(1000);
-                //ProcSent(msg_byte[i].ToString());
             }
         }
 

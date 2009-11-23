@@ -20,24 +20,14 @@ namespace SmartMusic
         {
             InitializeComponent();
             winampConnection = new WinampConnection();
-
-            for(int i=1;i<4;i++)
-            {
-                for(int j=1;j<4;j++)
-                {
-                    listBox1.Items.Add("" + i + j);
-                }
-            }
-
             winampConnection.TrackChanged += new TrackChangedEventHandler(winampConnection_TrackChanged);
-            
-
             this.InitializePorts();
         }
 
         void winampConnection_TrackChanged(string song)
         {
-            //serialComm.Send("a");
+            //Se ha comentado esta linea debido a que el PIC genera problemas al recibir info 
+            //desde el PC.
             //serialComm.Send(song);
         }
 
@@ -58,16 +48,6 @@ namespace SmartMusic
             serialComm.IncomingInfoEvent+=new IncomingInfoEventHandler(winampConnection.GetAction);
             serialComm.Start();
             ListenWinamp();
-            //serialComm.Send('h');
-        }
-
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            char[] levels = listBox1.SelectedItem.ToString().ToCharArray();
-            int ldr = Int32.Parse(""+levels[0]);
-            int snd = Int32.Parse(""+levels[1]);
-            this.winampConnection.ChangePlaylist(ldr, snd);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -86,13 +66,5 @@ namespace SmartMusic
         {
             winampConnection.DoAction(3);
         }
-
-
-
-
-
-
-
-
     }
 }
