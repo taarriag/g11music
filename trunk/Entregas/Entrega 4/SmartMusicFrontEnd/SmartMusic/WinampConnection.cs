@@ -73,7 +73,7 @@ namespace SmartMusic
 
 
         /// <summary>
-        /// Cambia la lista a reproducir en función del
+        /// Cambia la lista a reproducir en funcion del
         /// nivel de luz y sonido entrante
         /// </summary>
         /// <param name="new_ldr_level">Nuevo nivel de luz</param>

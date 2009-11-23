@@ -27,7 +27,7 @@ namespace SmartMusic
         /// <summary>
         /// Inicializa una instancia de comunicacion serial en el puerto de nombre portName
         /// </summary>
-        /// <param name="portName">Nombre del puerto en el cual se inicializará la comunicacion</param>
+        /// <param name="portName">Nombre del puerto en el cual se inicializara la comunicacion</param>
         public SerialComm(string portName)
         {
             sp = new SerialPort();
@@ -65,7 +65,7 @@ namespace SmartMusic
 
         /// <summary>
         /// Metodo encargado de recibir los datos provenientes desde el PIC, generando un string
-        /// y ejecutando el método ProcReceived.
+        /// y ejecutando el metodo ProcReceived.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -90,7 +90,7 @@ namespace SmartMusic
 
         /// <summary>
         /// Recibe una linea leida a partir de la info del PIC y dispara 
-        /// el evento IncomingInfoEvent, entregandole como parámetro la linea leida.
+        /// el evento IncomingInfoEvent, entregandole como parametro la linea leida.
         /// </summary>
         /// <param name="readed_line"></param>
         private void ProcReceived(string readed_line)
